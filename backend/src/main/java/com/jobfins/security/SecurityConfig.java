@@ -64,6 +64,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/transactions/**").permitAll()
                 .requestMatchers("/api/accounts/**").permitAll()
                 .requestMatchers("/api/db/accounts/**").permitAll()
+                .requestMatchers("/api/salary-guide/**").permitAll()
+                .requestMatchers("/api/companies/**").permitAll()
+                .requestMatchers("/api/career-tips/**").permitAll()
+                .requestMatchers("/api/notifications/**").permitAll()
+                .requestMatchers("/api/health").permitAll()
+                .requestMatchers("/api/info").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/{id}").permitAll()
                 // All other endpoints require authentication
