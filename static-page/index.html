@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobFin - India's Premier Tech & Finance Recruitment Portal</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Custom Design System CSS -->
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ===================================================================
+       0. Required Authentication Gateway (Login / Sign Up First)
+       =================================================================== -->
+  <div id="staticAuthGateway" class="auth-gateway-wrapper d-flex align-items-center justify-content-center min-vh-100 py-5 position-relative">
+    <!-- Floating Theme Switcher for Gateway -->
+    <div class="position-absolute top-0 end-0 m-4 z-3">
+      <button class="btn btn-light shadow-sm border rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 42px; height: 42px;" onclick="toggleStaticTheme()" title="Toggle Dark/Light Mode">
+        <i class="bi bi-moon-stars-fill text-primary fs-5" id="staticGatewayThemeIcon"></i>
+      </button>
+    </div>
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+          <div class="auth-glass-card shadow-lg rounded-4 overflow-hidden">
+            
+            <!-- Brand Top Header -->
+            <div class="auth-card-header text-center p-4 pb-3 border-bottom">
+              <div class="d-flex justify-content-center mb-2">
+                <img src="assets/logo.svg" alt="JobFins Logo" style="height: 48px; width: auto; object-fit: contain;" />
+              </div>
+              <h4 class="fw-bold text-dark mb-1" id="gatewayTitle">Welcome to JobFins</h4>
+              <p class="text-muted small mb-0" id="gatewaySubtitle">Please sign in to access verified career opportunities and talent ATS</p>
+            </div>
+
+            <!-- Mode Switcher -->
+            <div class="px-4 pt-3">
+              <div class="auth-tab-switch p-1 rounded-3 d-flex bg-light border">
+                <button type="button" id="tabLoginBtn" class="btn flex-fill py-2 fw-bold text-sm btn-cobalt shadow-sm" onclick="switchGatewayMode('login')">
+                  <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                </button>
+                <button type="button" id="tabRegBtn" class="btn flex-fill py-2 fw-bold text-sm text-muted" onclick="switchGatewayMode('register')">
+                  <i class="bi bi-person-plus me-1"></i> Create Account
+                </button>
+              </div>
+            </div>
+
+            <!-- One-Click Quick Demo Bar -->
+            <div class="px-4 pt-3">
+              <div class="quick-demo-box p-2 rounded-3 border bg-white d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-1 text-muted small fw-semibold">
+                  <i class="bi bi-lightning-charge-fill text-warning"></i>
+                  <span>Quick Demo:</span>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2 fw-semibold" onclick="quickFillGateway('recruiter')">
+                    <i class="bi bi-briefcase me-1"></i> Recruiter
+                  </button>
+                  <button type="button" class="btn btn-outline-success btn-sm py-1 px-2 fw-semibold" onclick="quickFillGateway('seeker')">
+                    <i class="bi bi-person me-1"></i> Candidate
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-4 pt-2" id="gatewayAlert"></div>
+
+            <!-- Form -->
+            <form id="gatewayForm" onsubmit="handleGatewayAuth(event)" class="p-4 pt-2">
+              <div id="gatewayRegFields" style="display: none;">
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-dark text-uppercase" style="font-size: 0.72rem;">Choose Account Role</label>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <div id="roleCardSeeker" class="role-select-card p-2 rounded-3 border text-center cursor-pointer active-role" onclick="selectGatewayRole('ROLE_SEEKER')">
+                        <i class="bi bi-person-badge display-6 text-primary d-block mb-1"></i>
+                        <div class="fw-bold small text-dark">Job Seeker</div>
+                        <small class="text-muted" style="font-size: 0.68rem;">Find & Apply to Jobs</small>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div id="roleCardRecruiter" class="role-select-card p-2 rounded-3 border text-center cursor-pointer" onclick="selectGatewayRole('ROLE_RECRUITER')">
+                        <i class="bi bi-building display-6 text-indigo d-block mb-1"></i>
+                        <div class="fw-bold small text-dark">Recruiter</div>
+                        <small class="text-muted" style="font-size: 0.68rem;">Post & Hire Talent</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Full Name *</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                    <input type="text" id="gatewayName" class="form-control border-start-0" placeholder="e.g. Rahul Sharma" />
+                  </div>
+                </div>
+
+                <div class="mb-3" id="gatewayCompanyGroup" style="display: none;">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Company / Organization *</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-muted"></i></span>
+                    <input type="text" id="gatewayCompany" class="form-control border-start-0" placeholder="e.g. TechCorp Innovations" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Email Address *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+                  <input type="email" id="gatewayEmail" class="form-control border-start-0" placeholder="name@domain.com" required />
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Password *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                  <input type="password" id="gatewayPassword" class="form-control border-start-0 border-end-0" placeholder="Enter your password" required />
+                  <button type="button" class="input-group-text bg-light border-start-0 text-muted" onclick="toggleGatewayPassword()">
+                    <i class="bi bi-eye" id="gatewayEyeIcon"></i>
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-cobalt w-100 py-2 fw-bold d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-box-arrow-in-right" id="gatewaySubmitIcon"></i>
+                <span id="gatewaySubmitText">Sign In to JobFins</span>
+              </button>
+            </form>
+
+            <div class="auth-card-footer p-3 bg-light text-center border-top">
+              <small class="text-muted d-block mb-1" id="gatewaySwitchPrompt">
+                Don't have an account yet? <a class="fw-bold text-primary cursor-pointer text-decoration-none" onclick="switchGatewayMode('register')">Register Now</a>
+              </small>
+              <div class="text-muted" style="font-size: 0.68rem;">
+                <i class="bi bi-shield-lock-fill text-success me-1"></i>
+                Protected with Secure HMAC-SHA256 JWT Authentication
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       Main Portal Content (Revealed upon Authentication)
+       =================================================================== -->
+  <div id="staticPortalContent" style="display: none;">
+
+  <!-- ===================================================================
+       1. Top Horizontal Navigation Bar (with Logo)
+       =================================================================== -->
+  <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container-fluid px-lg-5">
+      <!-- Brand Logo -->
+      <a class="navbar-brand d-flex items-center" href="index.html">
+        <img src="assets/logo.svg" alt="JobFins Logo" style="max-height: 42px; width: auto; object-fit: contain;" />
+      </a>
+
+      <!-- Mobile Toggle Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Nav Items & Auth Triggers - Centered in Horizontal Bar -->
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom active" href="#jobs-section"><i class="bi bi-briefcase me-1"></i> Jobs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="#salary-section"><i class="bi bi-cash-coin me-1"></i> Salary Guides</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="#companies-section"><i class="bi bi-buildings me-1"></i> Companies</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="#career-section"><i class="bi bi-lightbulb me-1"></i> Career Tips</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-custom" href="#stats-section"><i class="bi bi-bar-chart me-1"></i> Analytics</a>
+          </li>
+        </ul>
+
+        <!-- Right Side User Profile & Actions -->
+        <div class="d-flex align-items-center gap-2">
+          <!-- Theme Switcher Button -->
+          <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 38px; height: 38px;" onclick="toggleStaticTheme()" title="Toggle Dark/Light Mode">
+            <i class="bi bi-moon-stars-fill text-primary" id="staticNavbarThemeIcon"></i>
+          </button>
+
+          <!-- Notification Bell -->
+          <button class="btn btn-light position-relative border rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 38px; height: 38px;" data-bs-toggle="modal" data-bs-target="#notificationModal" title="View Notifications">
+            <i class="bi bi-bell-fill text-primary"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="staticNotifBadge" style="font-size: 0.65rem;">
+              3
+            </span>
+          </button>
+
+          <!-- Profile Button -->
+          <button class="btn btn-outline-custom btn-sm d-flex align-items-center gap-2 px-3" data-bs-toggle="modal" data-bs-target="#profileModal" title="Manage Profile">
+            <i class="bi bi-person-circle"></i>
+            <span class="fw-bold d-none d-sm-inline" id="staticUserName">Profile</span>
+            <span class="badge bg-light text-primary border d-none d-md-inline" id="staticUserRole" style="font-size: 0.68rem;">Seeker</span>
+          </button>
+
+          <button class="btn btn-cobalt btn-sm px-3 d-none d-lg-inline-block" data-bs-toggle="modal" data-bs-target="#postJobModal">
+            <i class="bi bi-plus-circle me-1"></i> Post a Job
+          </button>
+          <button class="btn btn-outline-danger btn-sm" onclick="staticLogout()" title="Log Out">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================================================================
+       2. Hero Section & Interactive Search Matrix
+       =================================================================== -->
+  <section class="hero-section">
+    <div class="container text-center">
+      <h1 class="display-5 text-white fw-bold mb-3 hero-title">
+        FIND YOUR NEXT OPPORTUNITY
+      </h1>
+      <p class="lead text-light opacity-90 mx-auto mb-4" style="max-width: 680px;">
+        Search thousands of verified jobs across top tech startups and global financial institutions with transparent salary metrics.
+      </p>
+
+      <!-- Advanced Search Matrix Box -->
+      <div class="search-matrix mx-auto my-4 text-start" style="max-width: 960px;">
+        <div class="row g-2 align-items-center">
+          <!-- Input 1: Role / Keyword -->
+          <div class="col-lg-4 col-md-6">
+            <div class="search-input-group">
+              <label><i class="bi bi-search me-1"></i> Keywords / Role</label>
+              <input type="text" id="searchInput" placeholder="Search jobs... (e.g. Java Backend Developer)" />
+            </div>
+          </div>
+
+          <!-- Input 2: Location -->
+          <div class="col-lg-3 col-md-6">
+            <div class="search-input-group">
+              <label><i class="bi bi-geo-alt me-1"></i> Location</label>
+              <input type="text" id="locationInput" placeholder="Mumbai, Bangalore, Remote" />
+            </div>
+          </div>
+
+          <!-- Input 3: Job Type -->
+          <div class="col-lg-3 col-md-6">
+            <div class="search-input-group">
+              <label><i class="bi bi-briefcase me-1"></i> Job Type</label>
+              <select id="jobTypeSelect">
+                <option value="all">All Job Types</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Remote">Remote</option>
+                <option value="Internship">Internship</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Search Button -->
+          <div class="col-lg-2 col-md-6">
+            <button class="btn btn-cobalt w-100 py-3 d-flex align-items-center justify-center gap-1" onclick="filterJobs()">
+              <i class="bi bi-search"></i> Search
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Filter Tags -->
+        <div class="mt-3 pt-2 border-top d-flex flex-wrap align-items-center gap-2">
+          <small class="text-muted fw-bold text-uppercase" style="font-size: 0.72rem;">Popular Tags:</small>
+          <span class="badge bg-light text-dark border cursor-pointer" onclick="setQuickSearch('Java')">Java Developer</span>
+          <span class="badge bg-light text-dark border cursor-pointer" onclick="setQuickSearch('Spring Boot')">Spring Boot</span>
+          <span class="badge bg-light text-dark border cursor-pointer" onclick="setQuickSearch('React')">React.js</span>
+          <span class="badge bg-light text-dark border cursor-pointer" onclick="setQuickSearch('Financial Analyst')">Financial Analyst</span>
+          <span class="badge bg-light text-dark border cursor-pointer" onclick="setQuickSearch('Remote')">Remote</span>
+        </div>
+      </div>
+
+      <!-- Telemetry Stats Bar -->
+      <div class="row g-3 justify-content-center mt-4" id="stats-section">
+        <div class="col-6 col-md-3">
+          <div class="telemetry-card">
+            <div class="stat-num" id="stat-jobs">2,450+</div>
+            <div class="stat-label">Active Verified Jobs</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="telemetry-card">
+            <div class="stat-num text-primary" id="stat-recruiters">1,200+</div>
+            <div class="stat-label">Direct Recruiters</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="telemetry-card">
+            <div class="stat-num text-success" id="stat-seekers">85,000+</div>
+            <div class="stat-label">Active Job Seekers</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="telemetry-card">
+            <div class="stat-num text-info" id="stat-placement">98.4%</div>
+            <div class="stat-label">Verified Placement Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       3. Featured Jobs Section (Two-Sided Portal Catalog)
+       =================================================================== -->
+  <section class="py-5" id="jobs-section">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="h3 mb-1">Featured Job Opportunities</h2>
+          <p class="text-muted mb-0">Explore curated roles from verified recruiters across India.</p>
+        </div>
+        <button class="btn btn-outline-custom btn-sm" onclick="resetJobFilter()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Reset Filters
+        </button>
+      </div>
+
+      <div class="row g-4" id="jobsContainer">
+        <!-- Job Card 1 -->
+        <div class="col-md-6 col-lg-6 job-item" data-title="Full Stack Java Developer" data-location="Mumbai, Maharashtra" data-type="Full-time">
+          <div class="job-card">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h3 class="h5 mb-1 text-dark">Full Stack Java Developer</h3>
+                  <div class="text-primary fw-semibold"><i class="bi bi-building me-1"></i> TechCorp Solutions</div>
+                </div>
+                <span class="job-badge badge-fulltime">Full-time</span>
+              </div>
+              <p class="text-muted small my-2">
+                Seeking a skilled Java Developer proficient with Spring Boot, MySQL, RESTful APIs, and React frontend to join our enterprise solutions team.
+              </p>
+              <div class="d-flex flex-wrap gap-1 my-2">
+                <span class="badge bg-light text-secondary border">Java 17</span>
+                <span class="badge bg-light text-secondary border">Spring Boot</span>
+                <span class="badge bg-light text-secondary border">MySQL</span>
+                <span class="badge bg-light text-secondary border">React.js</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+              <div>
+                <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i> Mumbai, Maharashtra</small>
+                <strong class="text-success">₹10,00,000 - ₹15,00,000 / yr</strong>
+              </div>
+              <button class="btn btn-cobalt btn-sm" onclick="openApplyModal('Full Stack Java Developer', 'TechCorp Solutions')">
+                <i class="bi bi-send me-1"></i> Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Card 2 -->
+        <div class="col-md-6 col-lg-6 job-item" data-title="Financial Analyst & Quant Associate" data-location="Remote" data-type="Remote">
+          <div class="job-card">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h3 class="h5 mb-1 text-dark">Financial Analyst & Quant Associate</h3>
+                  <div class="text-primary fw-semibold"><i class="bi bi-building me-1"></i> FinTech Global</div>
+                </div>
+                <span class="job-badge badge-remote">Remote</span>
+              </div>
+              <p class="text-muted small my-2">
+                Analyze financial models, risk metrics, and market trends for algorithmic trading and next-generation payment systems.
+              </p>
+              <div class="d-flex flex-wrap gap-1 my-2">
+                <span class="badge bg-light text-secondary border">Financial Modeling</span>
+                <span class="badge bg-light text-secondary border">Python</span>
+                <span class="badge bg-light text-secondary border">SQL</span>
+                <span class="badge bg-light text-secondary border">Data Analytics</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+              <div>
+                <small class="text-muted d-block"><i class="bi bi-laptop me-1"></i> Remote, Pan-India</small>
+                <strong class="text-success">₹12,00,000 - ₹18,00,000 / yr</strong>
+              </div>
+              <button class="btn btn-cobalt btn-sm" onclick="openApplyModal('Financial Analyst & Quant Associate', 'FinTech Global')">
+                <i class="bi bi-send me-1"></i> Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Card 3 -->
+        <div class="col-md-6 col-lg-6 job-item" data-title="Frontend React Developer" data-location="Bangalore, Karnataka" data-type="Full-time">
+          <div class="job-card">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h3 class="h5 mb-1 text-dark">Frontend React Developer</h3>
+                  <div class="text-primary fw-semibold"><i class="bi bi-building me-1"></i> TechCorp Solutions</div>
+                </div>
+                <span class="job-badge badge-fulltime">Full-time</span>
+              </div>
+              <p class="text-muted small my-2">
+                Build responsive, high-performance web applications using modern React, Tailwind/Bootstrap, and state-of-the-art UI architectures.
+              </p>
+              <div class="d-flex flex-wrap gap-1 my-2">
+                <span class="badge bg-light text-secondary border">React.js</span>
+                <span class="badge bg-light text-secondary border">JavaScript ES6+</span>
+                <span class="badge bg-light text-secondary border">Bootstrap 5</span>
+                <span class="badge bg-light text-secondary border">REST API</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+              <div>
+                <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i> Bangalore, Karnataka</small>
+                <strong class="text-success">₹9,00,000 - ₹14,00,000 / yr</strong>
+              </div>
+              <button class="btn btn-cobalt btn-sm" onclick="openApplyModal('Frontend React Developer', 'TechCorp Solutions')">
+                <i class="bi bi-send me-1"></i> Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Card 4 -->
+        <div class="col-md-6 col-lg-6 job-item" data-title="Junior Software Intern" data-location="Pune, Maharashtra" data-type="Internship">
+          <div class="job-card">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h3 class="h5 mb-1 text-dark">Junior Software Intern</h3>
+                  <div class="text-primary fw-semibold"><i class="bi bi-building me-1"></i> FinTech Global</div>
+                </div>
+                <span class="job-badge badge-intern">Internship</span>
+              </div>
+              <p class="text-muted small my-2">
+                Fast-track career program for CS/IT engineering students eager to master Full Stack Java, Spring Boot, and enterprise MySQL database systems.
+              </p>
+              <div class="d-flex flex-wrap gap-1 my-2">
+                <span class="badge bg-light text-secondary border">Core Java</span>
+                <span class="badge bg-light text-secondary border">OOP</span>
+                <span class="badge bg-light text-secondary border">MySQL</span>
+                <span class="badge bg-light text-secondary border">REST</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+              <div>
+                <small class="text-muted d-block"><i class="bi bi-geo-alt me-1"></i> Pune, Maharashtra</small>
+                <strong class="text-success">₹25,000 / month</strong>
+              </div>
+              <button class="btn btn-cobalt btn-sm" onclick="openApplyModal('Junior Software Intern', 'FinTech Global')">
+                <i class="bi bi-send me-1"></i> Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       2.1. Salary Guides Section
+       =================================================================== -->
+  <section class="py-5 bg-light border-top border-bottom" id="salary-section">
+    <div class="container">
+      <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+          <span class="badge bg-primary text-white mb-2">2026 Industry Benchmarks</span>
+          <h2 class="h3 fw-bold text-dark mb-1"><i class="bi bi-cash-coin me-2 text-primary"></i> Tech & Finance Salary Guide</h2>
+          <p class="text-muted small mb-0">Verified compensation benchmarks across top software hubs and financial institutions.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+          <span class="badge bg-success-subtle text-success border border-success-subtle p-2">
+            <i class="bi bi-graph-up-arrow me-1"></i> Average Tech Growth: +19.4% YoY
+          </span>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card h-100 border shadow-sm rounded-3 p-4 bg-white">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <span class="badge bg-light text-primary border mb-1">Engineering</span>
+                <h5 class="fw-bold text-dark mb-0">Full Stack Java Engineer</h5>
+              </div>
+              <span class="badge bg-success">Very High Demand</span>
+            </div>
+            <div class="row text-center g-2 mb-3">
+              <div class="col-4"><div class="p-2 bg-light rounded border"><small class="text-muted d-block" style="font-size:0.68rem;">Entry (0-2 Yrs)</small><strong class="small">₹6.5 - 9.5 LPA</strong></div></div>
+              <div class="col-4"><div class="p-2 rounded border" style="background-color: #EFF6FF;"><small class="text-primary fw-bold d-block" style="font-size:0.68rem;">Mid (3-6 Yrs)</small><strong class="text-primary small">₹14 - 22 LPA</strong></div></div>
+              <div class="col-4"><div class="p-2 bg-light rounded border"><small class="text-muted d-block" style="font-size:0.68rem;">Senior (7+ Yrs)</small><strong class="text-success small">₹26 - 42 LPA</strong></div></div>
+            </div>
+            <small class="text-muted fw-bold d-block mb-1" style="font-size:0.72rem;">Top Skills: Spring Boot, React.js, MySQL, Docker, Microservices</small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card h-100 border shadow-sm rounded-3 p-4 bg-white">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div>
+                <span class="badge bg-light text-primary border mb-1">Fintech & Security</span>
+                <h5 class="fw-bold text-dark mb-0">Fintech Backend Architect</h5>
+              </div>
+              <span class="badge bg-success">Surging Demand</span>
+            </div>
+            <div class="row text-center g-2 mb-3">
+              <div class="col-4"><div class="p-2 bg-light rounded border"><small class="text-muted d-block" style="font-size:0.68rem;">Entry (0-2 Yrs)</small><strong class="small">₹9.0 - 14 LPA</strong></div></div>
+              <div class="col-4"><div class="p-2 rounded border" style="background-color: #EFF6FF;"><small class="text-primary fw-bold d-block" style="font-size:0.68rem;">Mid (3-6 Yrs)</small><strong class="text-primary small">₹20 - 32 LPA</strong></div></div>
+              <div class="col-4"><div class="p-2 bg-light rounded border"><small class="text-muted d-block" style="font-size:0.68rem;">Senior (7+ Yrs)</small><strong class="text-success small">₹38 - 65 LPA</strong></div></div>
+            </div>
+            <small class="text-muted fw-bold d-block mb-1" style="font-size:0.72rem;">Top Skills: High-Throughput APIs, Kafka, JWT Security, PostgreSQL, AWS</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       2.2. Companies Section
+       =================================================================== -->
+  <section class="py-5" id="companies-section">
+    <div class="container">
+      <div class="mb-4">
+        <span class="badge bg-primary text-white mb-2">Verified Employers</span>
+        <h2 class="h3 fw-bold text-dark mb-1"><i class="bi bi-buildings me-2 text-primary"></i> Top Hiring Companies</h2>
+        <p class="text-muted small mb-0">Explore verified technology and finance enterprises actively recruiting on JobFins.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card h-100 border shadow-sm rounded-3 p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary text-white rounded-3 p-2 fw-bold d-flex align-items-center justify-content-center" style="width:48px;height:48px;">TC</div>
+                <div>
+                  <h5 class="fw-bold text-dark mb-0">TechCorp Innovations</h5>
+                  <small class="text-muted"><i class="bi bi-geo-alt text-danger me-1"></i> Bangalore, Karnataka</small>
+                </div>
+              </div>
+              <span class="badge bg-warning text-dark"><i class="bi bi-star-fill text-warning me-1"></i>4.8 (340)</span>
+            </div>
+            <p class="small text-muted mt-2 mb-3">Pioneering cloud-native microservices, scalable full stack platforms, and enterprise analytics solutions.</p>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+              <span class="badge bg-light text-primary border">8 Active Openings</span>
+              <a href="#jobs-section" class="btn btn-outline-custom btn-sm" onclick="setQuickSearch('TechCorp')">View Roles</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card h-100 border shadow-sm rounded-3 p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-success text-white rounded-3 p-2 fw-bold d-flex align-items-center justify-content-center" style="width:48px;height:48px;">FT</div>
+                <div>
+                  <h5 class="fw-bold text-dark mb-0">FinTech Spark Global</h5>
+                  <small class="text-muted"><i class="bi bi-geo-alt text-danger me-1"></i> Mumbai, Maharashtra</small>
+                </div>
+              </div>
+              <span class="badge bg-warning text-dark"><i class="bi bi-star-fill text-warning me-1"></i>4.9 (520)</span>
+            </div>
+            <p class="small text-muted mt-2 mb-3">Core banking systems, algorithmic trade execution engines, and high-security payment infrastructures.</p>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+              <span class="badge bg-light text-primary border">12 Active Openings</span>
+              <a href="#jobs-section" class="btn btn-outline-custom btn-sm" onclick="setQuickSearch('FinTech')">View Roles</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       2.3. Career Tips Section
+       =================================================================== -->
+  <section class="py-5 bg-light border-top" id="career-section">
+    <div class="container">
+      <div class="mb-4">
+        <span class="badge bg-primary text-white mb-2">Expert Advice</span>
+        <h2 class="h3 fw-bold text-dark mb-1"><i class="bi bi-lightbulb me-2 text-primary"></i> Career Tips & Guidance</h2>
+        <p class="text-muted small mb-0">Actionable advice to excel in technical resume screening, system design, and salary negotiations.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 border shadow-sm rounded-3 p-4 bg-white">
+            <span class="badge bg-light text-primary border align-self-start mb-2">Resume Engineering</span>
+            <h6 class="fw-bold text-dark">Top 7 Resume Rules for Full Stack Engineers</h6>
+            <p class="small text-muted mb-0">Structure quantifiable impact (e.g. "Built Spring Boot & React platform handling 10k daily requests") and highlight core stacks.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border shadow-sm rounded-3 p-4 bg-white">
+            <span class="badge bg-light text-primary border align-self-start mb-2">Interviews</span>
+            <h6 class="fw-bold text-dark">Cracking Java & React System Design</h6>
+            <p class="small text-muted mb-0">Master Spring lifecycle, REST API architecture, database indexing, and responsive component state patterns.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 border shadow-sm rounded-3 p-4 bg-white">
+            <span class="badge bg-light text-primary border align-self-start mb-2">Negotiation</span>
+            <h6 class="fw-bold text-dark">How to Negotiate Your Tech Compensation</h6>
+            <p class="small text-muted mb-0">Benchmark against verified salary bands, consider total rewards (base, bonus, equity), and articulate unique business value.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       4. Modals (Auth, Apply, Post Job)
+       =================================================================== -->
+
+  <!-- Modal: Candidate / Recruiter Login -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="loginModalLabel"><i class="bi bi-lock me-1 text-primary"></i> Sign In to JobFin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="staticLoginForm" onsubmit="handleStaticLogin(event)">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Email Address</label>
+              <input type="email" class="form-control" id="loginEmail" placeholder="e.g. seeker@jobfins.com" required />
+              <small class="text-muted">Demo: <code>recruiter@jobfins.com</code> or <code>seeker@jobfins.com</code></small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Password</label>
+              <input type="password" class="form-control" id="loginPassword" value="password123" required />
+            </div>
+            <button type="submit" class="btn btn-cobalt w-100 py-2">Sign In with JWT</button>
+          </form>
+          <div id="loginFeedback" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: User Registration -->
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="registerModalLabel"><i class="bi bi-person-plus me-1 text-primary"></i> Create an Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="staticRegisterForm" onsubmit="handleStaticRegister(event)">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Account Role</label>
+              <select class="form-select" id="regRole" onchange="toggleRegFields()">
+                <option value="ROLE_SEEKER">Job Seeker (Looking for a job)</option>
+                <option value="ROLE_RECRUITER">Job Recruiter (Looking to hire)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Full Name</label>
+              <input type="text" class="form-control" id="regName" placeholder="John Doe" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Email Address</label>
+              <input type="email" class="form-control" id="regEmail" placeholder="john@example.com" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Password</label>
+              <input type="password" class="form-control" id="regPassword" placeholder="Minimum 6 characters" required />
+            </div>
+            <div class="mb-3" id="companyField" style="display: none;">
+              <label class="form-label small fw-bold">Company / Organization Name</label>
+              <input type="text" class="form-control" id="regCompany" placeholder="e.g. Infosys, TCS, FinTech Co." />
+            </div>
+            <button type="submit" class="btn btn-navy w-100 py-2">Create Account</button>
+          </form>
+          <div id="registerFeedback" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Post a Job (Recruiter View) -->
+  <div class="modal fade" id="postJobModal" tabindex="-1" aria-labelledby="postJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="postJobModalLabel"><i class="bi bi-briefcase-fill me-1 text-primary"></i> Post a New Job Listing</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="staticJobForm" onsubmit="handleStaticJobPost(event)">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Job Title</label>
+                <input type="text" class="form-control" id="postTitle" placeholder="e.g. Senior Java Engineer" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Company Name</label>
+                <input type="text" class="form-control" id="postCompany" placeholder="e.g. FinTech Global" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Location</label>
+                <input type="text" class="form-control" id="postLocation" placeholder="e.g. Mumbai, Maharashtra or Remote" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Job Type</label>
+                <select class="form-select" id="postType">
+                  <option value="Full-time">Full-time</option>
+                  <option value="Remote">Remote</option>
+                  <option value="Internship">Internship</option>
+                  <option value="Part-time">Part-time</option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label small fw-bold">Salary Range</label>
+                <input type="text" class="form-control" id="postSalary" placeholder="e.g. ₹12,00,000 - ₹18,00,000 / yr" />
+              </div>
+              <div class="col-md-12">
+                <label class="form-label small fw-bold">Job Description</label>
+                <textarea class="form-control" id="postDescription" rows="3" placeholder="Describe the responsibilities and key deliverables..." required></textarea>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label small fw-bold">Requirements / Skills</label>
+                <textarea class="form-control" id="postRequirements" rows="2" placeholder="List required technologies, degrees, or experience..."></textarea>
+              </div>
+            </div>
+            <div class="mt-4">
+              <button type="submit" class="btn btn-cobalt w-100 py-2">Publish Job Listing</button>
+            </div>
+          </form>
+          <div id="jobPostFeedback" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Notification Drawer (Role-Based) -->
+  <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-end" style="max-width: 420px; margin-right: 1.5rem; margin-top: 1.5rem;">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header bg-white border-bottom p-3">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-bell-fill text-primary fs-5"></i>
+            <h6 class="modal-title fw-bold text-dark mb-0" id="notificationModalLabel">Notifications</h6>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="bg-light px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+          <small class="text-muted fw-semibold">
+            Mode: <span class="badge bg-primary-subtle text-primary" id="staticNotifRoleBadge">Candidate Alerts</span>
+          </small>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-primary fw-semibold" style="font-size: 0.75rem;" onclick="markStaticAllRead()">
+              Mark all read
+            </button>
+            <span class="text-muted small">&bull;</span>
+            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger fw-semibold" style="font-size: 0.75rem;" onclick="clearStaticNotifications()">
+              Clear
+            </button>
+          </div>
+        </div>
+        <div class="modal-body p-0" id="staticNotifContainer">
+          <!-- Populated by JS -->
+        </div>
+        <div class="modal-footer bg-light p-2 border-top text-center justify-content-center">
+          <small class="text-muted" style="font-size: 0.72rem;">
+            <i class="bi bi-shield-check text-success me-1"></i> Real-time notification stream active
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Role-Based User Profile -->
+  <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header text-white p-4" style="background: linear-gradient(135deg, #0A192F 0%, #1E3A8A 100%);">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; font-size: 1.5rem;" id="staticProfileAvatar">
+              U
+            </div>
+            <div>
+              <span class="badge bg-success text-white mb-1" id="staticProfileTypeBadge">Candidate Profile</span>
+              <h5 class="modal-title fw-bold text-white mb-0" id="staticProfileNameHeader">User Profile</h5>
+              <small class="text-white-50" id="staticProfileEmailHeader">user@domain.com</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div id="staticProfileFeedback"></div>
+          
+          <form id="staticProfileForm" onsubmit="handleStaticProfileSave(event)">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Full Name *</label>
+                <input type="text" class="form-control" id="staticProfName" required />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Contact Phone *</label>
+                <input type="tel" class="form-control" id="staticProfPhone" value="+91 98765 43210" required />
+              </div>
+
+              <!-- Recruiter-specific fields -->
+              <div id="staticRecruiterFields" class="row g-3 m-0 p-0" style="display: none;">
+                <div class="col-md-6 ps-0">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Company / Organization *</label>
+                  <input type="text" class="form-control" id="staticProfCompany" value="TechCorp Innovations" />
+                </div>
+                <div class="col-md-6 pe-0">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Company Website</label>
+                  <input type="url" class="form-control" id="staticProfWebsite" value="https://techcorp-innovations.com" />
+                </div>
+              </div>
+
+              <!-- Seeker-specific fields -->
+              <div id="staticSeekerFields" class="row g-3 m-0 p-0">
+                <div class="col-md-6 ps-0">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Experience Level</label>
+                  <select class="form-select" id="staticProfExp">
+                    <option value="Entry-Level (0-2 Yrs)">Entry-Level (0-2 Yrs)</option>
+                    <option value="Mid-Level (3-5 Yrs)" selected>Mid-Level (3-5 Yrs)</option>
+                    <option value="Senior (6-9 Yrs)">Senior (6-9 Yrs)</option>
+                    <option value="Lead / Architect (10+ Yrs)">Lead / Architect (10+ Yrs)</option>
+                  </select>
+                </div>
+                <div class="col-md-6 pe-0">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Resume Link</label>
+                  <input type="url" class="form-control" id="staticProfResume" value="https://drive.google.com/your-verified-resume.pdf" />
+                </div>
+                <div class="col-12 px-0">
+                  <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Key Skills / Technologies *</label>
+                  <input type="text" class="form-control" id="staticProfSkills" value="Java 17, Spring Boot, MySQL, React.js, Docker, Microservices" />
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label small fw-bold text-muted text-uppercase" style="font-size: 0.72rem;">Location / Base City</label>
+                <input type="text" class="form-control" id="staticProfLocation" value="Bangalore / Hybrid" />
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-cobalt px-4 fw-bold">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       5. Footer
+       =================================================================== -->
+  <footer>
+    <div class="container text-center text-md-start">
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="d-flex align-items-center mb-3">
+            <img src="assets/logo.svg" alt="JobFins Logo" style="height: 40px; width: auto; object-fit: contain;" />
+          </div>
+          <p class="small text-muted">
+            JobFin is India's leading recruitment ecosystem designed for technology and finance professionals.
+          </p>
+        </div>
+        <div class="col-md-2 col-6">
+          <h6 class="text-white fw-bold small text-uppercase mb-3">For Candidates</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="#jobs-section">Browse Jobs</a></li>
+            <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Candidate Login</a></li>
+            <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register Resume</a></li>
+          </ul>
+        </div>
+        <div class="col-md-2 col-6">
+          <h6 class="text-white fw-bold small text-uppercase mb-3">For Recruiters</h6>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#postJobModal">Post a Free Job</a></li>
+            <li class="mb-2"><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Recruiter Portal</a></li>
+            <li class="mb-2"><a href="#stats-section">Talent Analytics</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h6 class="text-white fw-bold small text-uppercase mb-3">Platform Highlights</h6>
+          <p class="small text-muted mb-2">Enterprise-grade applicant tracking and intelligent talent discovery.</p>
+          <div class="d-flex flex-wrap gap-1">
+            <span class="badge bg-secondary text-white">Verified Employers</span>
+            <span class="badge bg-secondary text-white">Real-Time ATS</span>
+            <span class="badge bg-secondary text-white">Secure Profiles</span>
+            <span class="badge bg-secondary text-white">Direct Messaging</span>
+          </div>
+        </div>
+      </div>
+      <div class="pt-3 border-top border-secondary text-center small text-muted">
+        &copy; 2026 JobFins Recruitment Technologies. All rights reserved.
+      </div>
+    </div>
+  </footer>
+  </div> <!-- End #staticPortalContent -->
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Interactive Scripts for Static Web Page (Milestone 2) -->
+  <script>
+    let currentGatewayMode = 'login';
+    let currentGatewayRole = 'ROLE_SEEKER';
+    let currentStaticTheme = localStorage.getItem('jobfins_theme') || 'light';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initStaticTheme();
+      checkStaticAuth();
+    });
+
+    function initStaticTheme() {
+      document.documentElement.setAttribute('data-theme', currentStaticTheme);
+      updateThemeIcons();
+    }
+
+    function toggleStaticTheme() {
+      currentStaticTheme = currentStaticTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', currentStaticTheme);
+      localStorage.setItem('jobfins_theme', currentStaticTheme);
+      updateThemeIcons();
+    }
+
+    function updateThemeIcons() {
+      const gwIcon = document.getElementById('staticGatewayThemeIcon');
+      const navIcon = document.getElementById('staticNavbarThemeIcon');
+      const isDark = currentStaticTheme === 'dark';
+      
+      if (gwIcon) {
+        gwIcon.className = isDark ? 'bi bi-sun-fill text-warning fs-5' : 'bi bi-moon-stars-fill text-primary fs-5';
+      }
+      if (navIcon) {
+        navIcon.className = isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill text-primary';
+      }
+    }
+
+    let staticNotifications = [];
+
+    function getStaticInitialNotifications(role) {
+      if (role === 'ROLE_RECRUITER') {
+        return [
+          { id: 1, title: 'New Application Received', message: 'Sarah Jenkins applied for Senior Full Stack Java Developer.', time: '10 mins ago', type: 'application', icon: 'bi-person-badge', read: false },
+          { id: 2, title: 'Candidate Shortlisted', message: 'Rahul Sharma was moved to Technical Screening Round.', time: '2 hours ago', type: 'status', icon: 'bi-check2-circle', read: false },
+          { id: 3, title: 'Job Posting Performance', message: 'Your job post for Cloud Architect received 42 new views today.', time: '5 hours ago', type: 'info', icon: 'bi-graph-up-arrow', read: true },
+        ];
+      } else {
+        return [
+          { id: 101, title: 'Interview Invitation Scheduled', message: 'Google Cloud invited you for a Technical Round on Thursday at 3:00 PM.', time: '15 mins ago', type: 'interview', icon: 'bi-calendar-check', read: false },
+          { id: 102, title: 'Application Shortlisted', message: 'TechCorp reviewed your profile for Senior Java Engineer and moved you forward.', time: '1 hour ago', type: 'status', icon: 'bi-patch-check-fill', read: false },
+          { id: 103, title: 'Matching Job Opportunity', message: 'Amazon posted "Backend Engineer (Spring Boot & AWS)" matching your skill profile.', time: '4 hours ago', type: 'application', icon: 'bi-briefcase-fill', read: true },
+        ];
+      }
+    }
+
+    function renderStaticNotifications() {
+      const container = document.getElementById('staticNotifContainer');
+      const badge = document.getElementById('staticNotifBadge');
+      const unread = staticNotifications.filter(n => !n.read).length;
+      
+      if (badge) {
+        badge.textContent = unread;
+        badge.style.display = unread > 0 ? 'inline-block' : 'none';
+      }
+
+      if (!container) return;
+
+      if (staticNotifications.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5 px-3">
+            <i class="bi bi-bell-slash text-muted display-5 mb-2 d-block"></i>
+            <h6 class="fw-bold text-dark">No Notifications</h6>
+            <p class="text-muted small mb-0">You're caught up with all recruitment updates!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="list-group list-group-flush">
+          ${staticNotifications.map(n => `
+            <div class="list-group-item list-group-item-action p-3 border-bottom cursor-pointer ${!n.read ? 'bg-primary-subtle bg-opacity-25' : ''}" onclick="markStaticNotifRead(${n.id})">
+              <div class="d-flex align-items-start gap-3">
+                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0 ${n.type === 'status' ? 'bg-success text-white' : n.type === 'application' ? 'bg-primary text-white' : n.type === 'interview' ? 'bg-info text-white' : 'bg-warning text-dark'}" style="width: 36px; height: 36px;">
+                  <i class="bi ${n.icon}"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <strong class="text-dark small">${n.title}</strong>
+                    <small class="text-muted" style="font-size: 0.68rem;">${n.time}</small>
+                  </div>
+                  <p class="text-muted small mb-1" style="font-size: 0.78rem;">${n.message}</p>
+                  ${!n.read ? '<span class="badge bg-primary" style="font-size: 0.62rem;">New</span>' : ''}
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function markStaticNotifRead(id) {
+      staticNotifications = staticNotifications.map(n => n.id === id ? { ...n, read: true } : n);
+      renderStaticNotifications();
+    }
+
+    function markStaticAllRead() {
+      staticNotifications = staticNotifications.map(n => ({ ...n, read: true }));
+      renderStaticNotifications();
+    }
+
+    function clearStaticNotifications() {
+      staticNotifications = [];
+      renderStaticNotifications();
+    }
+
+    function checkStaticAuth() {
+      const savedUser = sessionStorage.getItem('jobfins_static_user');
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        document.getElementById('staticAuthGateway').style.display = 'none';
+        document.getElementById('staticPortalContent').style.display = 'block';
+        document.getElementById('staticUserName').textContent = u.name.split(' ')[0] || 'User';
+        document.getElementById('staticUserRole').textContent = u.role === 'ROLE_RECRUITER' ? 'Recruiter' : 'Seeker';
+        
+        // Setup profile modal
+        document.getElementById('staticProfileAvatar').textContent = u.name.charAt(0) || 'U';
+        document.getElementById('staticProfileNameHeader').textContent = u.name;
+        document.getElementById('staticProfileEmailHeader').textContent = u.email;
+        document.getElementById('staticProfName').value = u.name;
+        document.getElementById('staticProfileTypeBadge').textContent = u.role === 'ROLE_RECRUITER' ? 'Enterprise Recruiter' : 'Verified Candidate';
+        document.getElementById('staticNotifRoleBadge').textContent = u.role === 'ROLE_RECRUITER' ? 'Recruiter Alerts' : 'Candidate Alerts';
+        
+        if (u.role === 'ROLE_RECRUITER') {
+          document.getElementById('staticRecruiterFields').style.display = 'flex';
+          document.getElementById('staticSeekerFields').style.display = 'none';
+        } else {
+          document.getElementById('staticRecruiterFields').style.display = 'none';
+          document.getElementById('staticSeekerFields').style.display = 'flex';
+        }
+
+        // Setup notifications
+        if (staticNotifications.length === 0) {
+          staticNotifications = getStaticInitialNotifications(u.role);
+        }
+        renderStaticNotifications();
+      } else {
+        document.getElementById('staticAuthGateway').style.display = 'flex';
+        document.getElementById('staticPortalContent').style.display = 'none';
+      }
+    }
+
+    function handleStaticProfileSave(e) {
+      e.preventDefault();
+      const savedUser = sessionStorage.getItem('jobfins_static_user');
+      if (!savedUser) return;
+      const u = JSON.parse(savedUser);
+      u.name = document.getElementById('staticProfName').value.trim();
+      sessionStorage.setItem('jobfins_static_user', JSON.stringify(u));
+      
+      const feedback = document.getElementById('staticProfileFeedback');
+      feedback.innerHTML = `<div class="alert alert-success py-2 small mb-3"><i class="bi bi-check-circle me-1"></i> Profile saved successfully to JobFins database!</div>`;
+      
+      document.getElementById('staticUserName').textContent = u.name.split(' ')[0] || 'User';
+      document.getElementById('staticProfileNameHeader').textContent = u.name;
+      document.getElementById('staticProfileAvatar').textContent = u.name.charAt(0) || 'U';
+      
+      setTimeout(() => {
+        feedback.innerHTML = '';
+      }, 3000);
+    }
+
+    function switchGatewayMode(mode) {
+      currentGatewayMode = mode;
+      document.getElementById('gatewayAlert').innerHTML = '';
+      if (mode === 'login') {
+        document.getElementById('tabLoginBtn').className = 'btn flex-fill py-2 fw-bold text-sm btn-cobalt shadow-sm';
+        document.getElementById('tabRegBtn').className = 'btn flex-fill py-2 fw-bold text-sm text-muted';
+        document.getElementById('gatewayTitle').textContent = 'Welcome to JobFins';
+        document.getElementById('gatewaySubtitle').textContent = 'Please sign in to access verified career opportunities and talent ATS';
+        document.getElementById('gatewayRegFields').style.display = 'none';
+        document.getElementById('gatewaySubmitText').textContent = 'Sign In to JobFins';
+        document.getElementById('gatewaySubmitIcon').className = 'bi bi-box-arrow-in-right';
+        document.getElementById('gatewaySwitchPrompt').innerHTML = "Don't have an account yet? <a class='fw-bold text-primary cursor-pointer text-decoration-none' onclick=\"switchGatewayMode('register')\">Register Now</a>";
+      } else {
+        document.getElementById('tabRegBtn').className = 'btn flex-fill py-2 fw-bold text-sm btn-cobalt shadow-sm';
+        document.getElementById('tabLoginBtn').className = 'btn flex-fill py-2 fw-bold text-sm text-muted';
+        document.getElementById('gatewayTitle').textContent = 'Join the JobFins Network';
+        document.getElementById('gatewaySubtitle').textContent = 'Create your account to start applying or hiring top candidates';
+        document.getElementById('gatewayRegFields').style.display = 'block';
+        document.getElementById('gatewaySubmitText').textContent = 'Create Account';
+        document.getElementById('gatewaySubmitIcon').className = 'bi bi-person-plus';
+        document.getElementById('gatewaySwitchPrompt').innerHTML = "Already have an account? <a class='fw-bold text-primary cursor-pointer text-decoration-none' onclick=\"switchGatewayMode('login')\">Sign In</a>";
+      }
+    }
+
+    function selectGatewayRole(role) {
+      currentGatewayRole = role;
+      if (role === 'ROLE_SEEKER') {
+        document.getElementById('roleCardSeeker').classList.add('active-role');
+        document.getElementById('roleCardRecruiter').classList.remove('active-role');
+        document.getElementById('gatewayCompanyGroup').style.display = 'none';
+      } else {
+        document.getElementById('roleCardRecruiter').classList.add('active-role');
+        document.getElementById('roleCardSeeker').classList.remove('active-role');
+        document.getElementById('gatewayCompanyGroup').style.display = 'block';
+      }
+    }
+
+    function quickFillGateway(role) {
+      switchGatewayMode('login');
+      if (role === 'recruiter') {
+        document.getElementById('gatewayEmail').value = 'recruiter@jobfins.com';
+        document.getElementById('gatewayPassword').value = 'password123';
+      } else {
+        document.getElementById('gatewayEmail').value = 'seeker@jobfins.com';
+        document.getElementById('gatewayPassword').value = 'password123';
+      }
+    }
+
+    function toggleGatewayPassword() {
+      const passInput = document.getElementById('gatewayPassword');
+      const icon = document.getElementById('gatewayEyeIcon');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+      } else {
+        passInput.type = 'password';
+        icon.className = 'bi bi-eye';
+      }
+    }
+
+    function handleGatewayAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('gatewayEmail').value.trim();
+      const password = document.getElementById('gatewayPassword').value.trim();
+      const alertBox = document.getElementById('gatewayAlert');
+
+      if (!email || !password) {
+        alertBox.innerHTML = `<div class="alert alert-danger py-2 small"><i class="bi bi-exclamation-circle me-1"></i> Please fill in all required fields.</div>`;
+        return;
+      }
+
+      let name = (email === 'recruiter@jobfins.com' || currentGatewayRole === 'ROLE_RECRUITER') ? 'TechCorp Recruiter' : 'Ayush Sharma';
+      let role = (email === 'recruiter@jobfins.com' || currentGatewayRole === 'ROLE_RECRUITER') ? 'ROLE_RECRUITER' : 'ROLE_SEEKER';
+
+      if (currentGatewayMode === 'register') {
+        const inputName = document.getElementById('gatewayName').value.trim();
+        if (inputName) name = inputName;
+        role = currentGatewayRole;
+      }
+
+      alertBox.innerHTML = `<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-1"></i> Authentication successful! Launching JobFins Portal...</div>`;
+      
+      const userData = { name, email, role };
+      sessionStorage.setItem('jobfins_static_user', JSON.stringify(userData));
+
+      setTimeout(() => {
+        checkStaticAuth();
+      }, 700);
+    }
+
+    function staticLogout() {
+      sessionStorage.removeItem('jobfins_static_user');
+      checkStaticAuth();
+    }
+
+    // Live Search Filter
+    function filterJobs() {
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const location = document.getElementById('locationInput').value.toLowerCase().trim();
+      const type = document.getElementById('jobTypeSelect').value;
+
+      const jobItems = document.querySelectorAll('.job-item');
+      jobItems.forEach(item => {
+        const itemTitle = item.getAttribute('data-title').toLowerCase();
+        const itemLocation = item.getAttribute('data-location').toLowerCase();
+        const itemType = item.getAttribute('data-type');
+
+        const matchesSearch = !search || itemTitle.includes(search);
+        const matchesLocation = !location || itemLocation.includes(location);
+        const matchesType = (type === 'all') || (itemType === type);
+
+        if (matchesSearch && matchesLocation && matchesType) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    function setQuickSearch(tag) {
+      document.getElementById('searchInput').value = tag;
+      filterJobs();
+    }
+
+    function resetJobFilter() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('locationInput').value = '';
+      document.getElementById('jobTypeSelect').value = 'all';
+      filterJobs();
+    }
+
+    function openApplyModal(title, company) {
+      document.getElementById('applyJobTitle').textContent = title;
+      document.getElementById('applyJobCompany').textContent = company;
+      const modal = new bootstrap.Modal(document.getElementById('applyModal'));
+      modal.show();
+    }
+
+    function handleStaticJobPost(e) {
+      e.preventDefault();
+      const title = document.getElementById('postTitle').value;
+      const company = document.getElementById('postCompany').value;
+      const feedback = document.getElementById('jobPostFeedback');
+      feedback.innerHTML = `<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-1"></i> Job <strong>${title}</strong> at <strong>${company}</strong> posted to MySQL database!</div>`;
+    }
+
+    function handleStaticApply(e) {
+      e.preventDefault();
+      const feedback = document.getElementById('applyFeedback');
+      feedback.innerHTML = `<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-1"></i> Application submitted successfully with status <strong>PENDING</strong>!</div>`;
+    }
+  </script>
+</body>
+</html>

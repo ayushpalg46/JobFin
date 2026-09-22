@@ -1,0 +1,228 @@
+import React, { useState, useEffect } from 'react';
+import { jobService, applicationService } from '../services/api';
+
+export default function RecruiterDashboard({ user, onOpenPostJob }) {
+  const [myJobs, setMyJobs] = useState([]);
+  const [applicants, setApplicants] = useState([]);
+  const [activeTab, setActiveTab] = useState('jobs'); // 'jobs' or 'applicants'
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    fetchRecruiterData();
+  }, []);
+
+  const fetchRecruiterData = async () => {
+    setLoading(true);
+    try {
+      const [jobsRes, appsRes] = await Promise.all([
+        jobService.getMyJobs(),
+        applicationService.getAllApplicantsForRecruiter(),
+      ]);
+      setMyJobs(jobsRes.data || []);
+      setApplicants(appsRes.data || []);
+    } catch (err) {
+      console.error('Error fetching recruiter data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusUpdate = async (applicationId, newStatus) => {
+    try {
+      await applicationService.updateStatus(applicationId, newStatus);
+      setMessage({ type: 'success', text: `Application status updated to ${newStatus}!` });
+      fetchRecruiterData();
+      setTimeout(() => setMessage(null), 3000);
+    } catch (err) {
+      setMessage({ type: 'danger', text: 'Failed to update application status.' });
+    }
+  };
+
+  const handleDeleteJob = async (jobId) => {
+    if (!window.confirm('Are you sure you want to delete this job listing?')) return;
+    try {
+      await jobService.deleteJob(jobId);
+      setMessage({ type: 'success', text: 'Job listing deleted successfully.' });
+      fetchRecruiterData();
+      setTimeout(() => setMessage(null), 3000);
+    } catch (err) {
+      setMessage({ type: 'danger', text: 'Failed to delete job listing.' });
+    }
+  };
+
+  return (
+    <div className="container py-4">
+      {/* Header */}
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 p-4 bg-white rounded-3 border shadow-sm">
+        <div>
+          <span className="badge bg-primary text-white mb-1">Recruiter ATS Portal</span>
+          <h2 className="h4 mb-0 text-dark fw-bold">{user?.companyName || 'My Company'} - Talent Hub</h2>
+          <small className="text-muted">Logged in as {user?.name} ({user?.email})</small>
+        </div>
+        <button className="btn btn-cobalt btn-sm px-3" onClick={onOpenPostJob}>
+          <i className="bi bi-plus-circle me-1"></i> Post a New Job
+        </button>
+      </div>
+
+      {message && (
+        <div className={`alert alert-${message.type} py-2 small alert-dismissible fade show`} role="alert">
+          {message.text}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <ul className="nav nav-tabs mb-4">
+        <li className="nav-item">
+          <button
+            className={`nav-link fw-bold ${activeTab === 'jobs' ? 'active text-primary' : 'text-muted'}`}
+            onClick={() => setActiveTab('jobs')}
+          >
+            <i className="bi bi-briefcase me-1"></i> My Active Jobs ({myJobs.length})
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link fw-bold ${activeTab === 'applicants' ? 'active text-primary' : 'text-muted'}`}
+            onClick={() => setActiveTab('applicants')}
+          >
+            <i className="bi bi-people me-1"></i> Candidate Applications ({applicants.length})
+          </button>
+        </li>
+      </ul>
+
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status"></div>
+          <p className="text-muted mt-2 small">Loading your recruitment data from MySQL...</p>
+        </div>
+      ) : activeTab === 'jobs' ? (
+        // Jobs Tab
+        <div className="table-responsive bg-white rounded-3 border shadow-sm">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light small text-uppercase">
+              <tr>
+                <th>Job Title</th>
+                <th>Location</th>
+                <th>Type</th>
+                <th>Compensation</th>
+                <th>Posted Date</th>
+                <th className="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {myJobs.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-muted">
+                    No active job listings found. Click "Post a New Job" to create your first listing!
+                  </td>
+                </tr>
+              ) : (
+                myJobs.map((job) => (
+                  <tr key={job.id}>
+                    <td>
+                      <strong className="text-dark">{job.title}</strong>
+                      <small className="text-muted d-block">{job.company}</small>
+                    </td>
+                    <td><i className="bi bi-geo-alt text-muted me-1"></i>{job.location}</td>
+                    <td><span className="badge bg-light text-primary border">{job.jobType}</span></td>
+                    <td className="text-success fw-semibold">{job.salary || 'N/A'}</td>
+                    <td className="small text-muted">{job.postedDate?.substring(0, 10)}</td>
+                    <td className="text-end">
+                      <button className="btn btn-outline-danger btn-sm py-1 px-2" onClick={() => handleDeleteJob(job.id)}>
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        // Applicants Tab
+        <div className="table-responsive bg-white rounded-3 border shadow-sm">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light small text-uppercase">
+              <tr>
+                <th>Candidate</th>
+                <th>Applied For</th>
+                <th>Cover Letter & Resume</th>
+                <th>Applied Date</th>
+                <th>Status</th>
+                <th className="text-end">Update Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {applicants.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-muted">
+                    No candidates have applied to your listings yet.
+                  </td>
+                </tr>
+              ) : (
+                applicants.map((app) => (
+                  <tr key={app.id}>
+                    <td>
+                      <strong className="text-dark">{app.seeker?.name}</strong>
+                      <small className="text-muted d-block">{app.seeker?.email}</small>
+                      <small className="text-muted d-block">{app.seeker?.contactNumber}</small>
+                    </td>
+                    <td>
+                      <span className="fw-semibold text-primary">{app.job?.title}</span>
+                    </td>
+                    <td style={{ maxWidth: '280px' }}>
+                      <p className="small text-muted mb-1 text-truncate" title={app.coverLetter}>
+                        {app.coverLetter || 'No cover letter provided.'}
+                      </p>
+                      {app.resumeLink && (
+                        <a href={app.resumeLink} target="_blank" rel="noreferrer" className="btn btn-outline-primary btn-sm py-0 px-2" style={{ fontSize: '0.75rem' }}>
+                          <i className="bi bi-file-earmark-pdf me-1"></i> View Resume
+                        </a>
+                      )}
+                    </td>
+                    <td className="small text-muted">{app.appliedDate?.substring(0, 10)}</td>
+                    <td>
+                      <span className={`badge ${
+                        app.status === 'ACCEPTED' ? 'bg-success' :
+                        app.status === 'SHORTLISTED' ? 'bg-primary' :
+                        app.status === 'REJECTED' ? 'bg-danger' : 'bg-warning text-dark'
+                      }`}>
+                        {app.status}
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <div className="btn-group btn-group-sm">
+                        <button
+                          className="btn btn-outline-primary"
+                          onClick={() => handleStatusUpdate(app.id, 'SHORTLISTED')}
+                          title="Shortlist Candidate"
+                        >
+                          Shortlist
+                        </button>
+                        <button
+                          className="btn btn-outline-success"
+                          onClick={() => handleStatusUpdate(app.id, 'ACCEPTED')}
+                          title="Accept Candidate"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => handleStatusUpdate(app.id, 'REJECTED')}
+                          title="Reject Candidate"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
