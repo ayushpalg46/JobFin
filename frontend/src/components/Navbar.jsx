@@ -39,7 +39,7 @@ export default function Navbar({
 
         {/* Horizontal Navigation Links - Centered */}
         <div className="collapse navbar-collapse" id="reactNavbarContent">
-          <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav mx-auto mb-2 mb-lg-0 d-flex align-items-center justify-content-center">
             {/* Show 'Jobs' tab only for Job Seekers or unauthenticated visitors */}
             {(!user || user.role !== 'ROLE_RECRUITER') && (
               <li className="nav-item">
