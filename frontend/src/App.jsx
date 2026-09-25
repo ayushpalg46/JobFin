@@ -421,6 +421,7 @@ export default function App() {
             onProfileUpdated={(updatedUser) => setUser(updatedUser)}
             onFindJobs={() => setCurrentView('home')}
             onOpenProfileWizard={() => setProfileWizardOpen(true)}
+            onOpenPostJob={() => setPostJobModalOpen(true)}
           />
         ) : currentView === 'salary-guide' ? (
           <SalaryGuide

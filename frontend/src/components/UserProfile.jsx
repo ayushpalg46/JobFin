@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../services/api';
 
-export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpenProfileWizard }) {
+export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpenProfileWizard, onOpenPostJob }) {
   const isRecruiter = user?.role === 'ROLE_RECRUITER';
 
   // State
@@ -25,8 +25,45 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
       setContactNumber(user.contactNumber || '');
       setCompanyName(user.companyName || '');
       setBioOrSkills(user.bioOrSkills || '');
+      setLocation(user.location || (isRecruiter ? 'Bangalore HQ' : 'Remote'));
     }
-  }, [user]);
+  }, [user, isRecruiter]);
+
+  // Determine profile completeness based on localStorage or user properties
+  const isExplicitlyCompleted = Boolean(
+    user?.completedProfile ||
+    user?.profileStrength === 100 ||
+    localStorage.getItem('jobfins_profile_completed_' + user?.email) === 'true' ||
+    localStorage.getItem('jobfins_profile_completed') === 'true'
+  );
+
+  // Dynamic 8-stage verification matrix
+  const candidateStages = [
+    { label: 'Basic Identity (Name & Email)', isComplete: Boolean(user?.name && user?.email) },
+    { label: 'Phone & Mobile Verified', isComplete: Boolean(user?.contactNumber) },
+    { label: 'Resume / CV Document', isComplete: Boolean(user?.resumeFileName || user?.resumeUrl || user?.resumeBase64 || isExplicitlyCompleted) },
+    { label: 'Experience & History', isComplete: Boolean(user?.experienceLevel || (user?.experiences && user.experiences.length > 0) || isExplicitlyCompleted) },
+    { label: 'Technical Skills & Arsenal', isComplete: Boolean(user?.bioOrSkills || (user?.seekerSkills && user.seekerSkills.length > 0) || isExplicitlyCompleted) },
+    { label: 'Professional Bio & Summary', isComplete: Boolean(user?.summary || user?.bioOrSkills || isExplicitlyCompleted) },
+    { label: 'Target CTC & Notice Period', isComplete: Boolean(user?.expectedCtc || user?.noticePeriod || isExplicitlyCompleted) },
+    { label: 'Profile Picture / Avatar', isComplete: Boolean(user?.profilePic || user?.githubUrl || isExplicitlyCompleted) },
+  ];
+
+  const recruiterStages = [
+    { label: 'Recruiter Identity (Name & Email)', isComplete: Boolean(user?.name && user?.email) },
+    { label: 'Mobile & Contact Number', isComplete: Boolean(user?.contactNumber) },
+    { label: 'Corporate Registration / KYC', isComplete: Boolean(user?.gstin || user?.cinNumber || isExplicitlyCompleted) },
+    { label: 'Company Overview & Website', isComplete: Boolean(user?.companyName && (user?.companyWebsite || isExplicitlyCompleted)) },
+    { label: 'Target Hiring Tech Stack', isComplete: Boolean(user?.bioOrSkills || (user?.hiringDomains && user.hiringDomains.length > 0) || isExplicitlyCompleted) },
+    { label: 'Recruiter Bio & Designation', isComplete: Boolean(user?.summary || user?.designation || isExplicitlyCompleted) },
+    { label: 'Hiring Model & Preferences', isComplete: Boolean(user?.hiringVolume || isExplicitlyCompleted) },
+    { label: 'Corporate Avatar / Logo', isComplete: Boolean(user?.profilePic || isExplicitlyCompleted) },
+  ];
+
+  const stagesList = isRecruiter ? recruiterStages : candidateStages;
+  const completedCount = isExplicitlyCompleted ? 8 : stagesList.filter((s) => s.isComplete).length;
+  const calculatedPercentage = isExplicitlyCompleted ? 100 : Math.round((completedCount / 8) * 100);
+  const isProfileComplete = isExplicitlyCompleted || completedCount === 8;
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
@@ -105,7 +142,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
             </div>
 
             <div className="d-flex gap-2">
-              {user?.completedProfile || user?.contactNumber ? (
+              {isProfileComplete ? (
                 <button
                   className="btn btn-outline-light btn-sm fw-bold px-3 shadow-sm d-flex align-items-center gap-1"
                   onClick={onOpenProfileWizard}
@@ -120,7 +157,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                   onClick={onOpenProfileWizard}
                 >
                   <i className="bi bi-stars"></i>
-                  <span>Complete 8-Stage Profile</span>
+                  <span>Complete 8-Stage Profile ({calculatedPercentage}%)</span>
                 </button>
               )}
               <button
@@ -268,7 +305,9 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                         Official verified hiring partner on the JobFins recruitment network. Empowering technology teams to scale with high-caliber talent.
                       </p>
                       <div className="d-flex flex-wrap gap-3 small text-primary fw-semibold">
-                        <span><i className="bi bi-globe me-1"></i> <a href={companyWebsite} target="_blank" rel="noreferrer">{companyWebsite}</a></span>
+                        {companyWebsite && (
+                          <span><i className="bi bi-globe me-1"></i> <a href={companyWebsite} target="_blank" rel="noreferrer">{companyWebsite}</a></span>
+                        )}
                         <span><i className="bi bi-people-fill me-1"></i> 250-500 Employees</span>
                         <span><i className="bi bi-shield-check me-1 text-success"></i> GST Verified Entity</span>
                       </div>
@@ -279,7 +318,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                       <div className="col-md-6">
                         <div className="p-3 bg-white border rounded-3">
                           <small className="text-muted d-block text-uppercase" style={{ fontSize: '0.68rem' }}>Target Engineering Domains</small>
-                          <strong className="text-dark small">Full Stack Java, React, DevOps & Cloud</strong>
+                          <strong className="text-dark small">{bioOrSkills || 'Full Stack Java, React, DevOps & Cloud'}</strong>
                         </div>
                       </div>
                       <div className="col-md-6">
@@ -294,11 +333,15 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                   <div>
                     <h5 className="fw-bold text-dark mb-3"><i className="bi bi-code-square me-2 text-primary"></i> Skills & Technical Stack</h5>
                     <div className="d-flex flex-wrap gap-2 mb-4">
-                      {bioOrSkills?.split(',').map((skill, i) => (
-                        <span key={i} className="badge bg-light text-primary border p-2 px-3 fw-semibold">
-                          <i className="bi bi-check2 text-success me-1"></i> {skill.trim()}
-                        </span>
-                      ))}
+                      {bioOrSkills ? (
+                        bioOrSkills.split(',').map((skill, i) => (
+                          <span key={i} className="badge bg-light text-primary border p-2 px-3 fw-semibold">
+                            <i className="bi bi-check2 text-success me-1"></i> {skill.trim()}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-muted small">No skills added yet. Complete your profile stages to add skills.</span>
+                      )}
                     </div>
 
                     <h5 className="fw-bold text-dark mb-3"><i className="bi bi-briefcase me-2 text-primary"></i> Experience & Background</h5>
@@ -308,7 +351,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                         <span className="badge bg-success-subtle text-success border border-success-subtle">Ready to Interview</span>
                       </div>
                       <p className="text-muted small mb-0">
-                        Demonstrated capability in enterprise Spring Boot backend design, MySQL database optimization, and React frontend user interfaces.
+                        {user?.summary || 'Demonstrated capability in enterprise Spring Boot backend design, MySQL database optimization, and React frontend user interfaces.'}
                       </p>
                     </div>
 
@@ -317,51 +360,154 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                       <div className="d-flex align-items-center gap-2">
                         <i className="bi bi-file-pdf text-danger fs-4"></i>
                         <div>
-                          <strong className="text-dark small d-block">{name.replace(/\s+/g, '_')}_Resume_2026.pdf</strong>
-                          <small className="text-muted">Updated on JobFins candidate registry</small>
+                          <strong className="text-dark small d-block">
+                            {user?.resumeFileName || `${name.replace(/\s+/g, '_')}_Resume_2026.pdf`}
+                          </strong>
+                          <small className="text-muted">
+                            {user?.resumeFileSize ? `${(user.resumeFileSize / (1024 * 1024)).toFixed(2)} MB &bull; ` : ''}
+                            Updated on JobFins candidate registry
+                          </small>
                         </div>
                       </div>
-                      <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-outline-primary btn-sm px-3">
-                        <i className="bi bi-box-arrow-up-right me-1"></i> View Resume
-                      </a>
+                      {user?.resumeBase64 ? (
+                        <a
+                          href={user.resumeBase64}
+                          download={user.resumeFileName || 'Resume.pdf'}
+                          className="btn btn-outline-primary btn-sm px-3 fw-semibold"
+                        >
+                          <i className="bi bi-download me-1"></i> Download Resume
+                        </a>
+                      ) : resumeUrl ? (
+                        <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-outline-primary btn-sm px-3">
+                          <i className="bi bi-box-arrow-up-right me-1"></i> View Resume
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm px-3"
+                          onClick={onOpenProfileWizard}
+                        >
+                          <i className="bi bi-upload me-1"></i> Upload CV
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Right Column: Profile Stats Card */}
+              {/* Right Column: Dynamic Profile State */}
               <div className="col-lg-4">
-                <div className="p-4 bg-light rounded-4 border">
-                  <h6 className="fw-bold text-dark text-uppercase mb-3" style={{ fontSize: '0.78rem' }}>Profile Completeness</h6>
-                  <div className="progress mb-2" style={{ height: '8px' }}>
-                    <div className="progress-bar bg-success" role="progressbar" style={{ width: '95%' }}></div>
-                  </div>
-                  <div className="d-flex justify-content-between text-muted small mb-4">
-                    <span>95% Complete</span>
-                    <span className="text-success fw-bold">Verified</span>
-                  </div>
+                {isProfileComplete ? (
+                  /* When profile is 100% complete, REMOVE incomplete profile checklist and show Verified Account card */
+                  <div className="p-4 bg-white rounded-4 border shadow-sm">
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                      <div
+                        className="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm"
+                        style={{ width: '42px', height: '42px', minWidth: '42px' }}
+                      >
+                        <i className="bi bi-shield-check fs-4"></i>
+                      </div>
+                      <div>
+                        <h6 className="fw-bold text-dark mb-0">Verified Profile Active</h6>
+                        <span className="badge bg-success-subtle text-success border border-success-subtle" style={{ fontSize: '0.72rem' }}>
+                          <i className="bi bi-check2-all me-1"></i> 100% Completed
+                        </span>
+                      </div>
+                    </div>
 
-                  <ul className="list-unstyled small mb-4">
-                    <li className="mb-2 d-flex align-items-center gap-2 text-success">
-                      <i className="bi bi-check-circle-fill"></i> Email verified via JWT
-                    </li>
-                    <li className="mb-2 d-flex align-items-center gap-2 text-success">
-                      <i className="bi bi-check-circle-fill"></i> Mobile number linked
-                    </li>
-                    <li className="mb-2 d-flex align-items-center gap-2 text-success">
-                      <i className="bi bi-check-circle-fill"></i> Role preferences configured
-                    </li>
-                    <li className="d-flex align-items-center gap-2 text-success">
-                      <i className="bi bi-check-circle-fill"></i> MySQL database profile active
-                    </li>
-                  </ul>
+                    <p className="text-muted small mb-3">
+                      All 8 onboarding stages are fully completed and verified. Your profile is ranked with top recruiter visibility across JobFins.
+                    </p>
 
-                  {!isRecruiter && (
-                    <button className="btn btn-cobalt w-100 py-2 fw-bold" onClick={onFindJobs}>
-                      <i className="bi bi-search me-1"></i> Search Matching Jobs
+                    <div className="p-3 bg-light rounded-3 border mb-3 small">
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted">Account Status</span>
+                        <span className="text-success fw-bold"><i className="bi bi-check-circle-fill me-1"></i> Active & Verified</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted">Security Tier</span>
+                        <span className="text-dark fw-semibold">JWT Session Valid</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span className="text-muted">Database Sync</span>
+                        <span className="text-primary fw-semibold">Cloud MySQL Synced</span>
+                      </div>
+                    </div>
+
+                    <div className="d-grid gap-2">
+                      {isRecruiter ? (
+                        <>
+                          {onOpenPostJob && (
+                            <button className="btn btn-cobalt fw-bold py-2 shadow-sm" onClick={onOpenPostJob}>
+                              <i className="bi bi-plus-circle me-1"></i> Post New Job
+                            </button>
+                          )}
+                          <button className="btn btn-outline-secondary btn-sm py-2" onClick={onOpenProfileWizard}>
+                            <i className="bi bi-sliders me-1"></i> Edit 8-Stage Details
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button className="btn btn-cobalt fw-bold py-2 shadow-sm" onClick={onFindJobs}>
+                            <i className="bi bi-search me-1"></i> Search Matching Jobs
+                          </button>
+                          <button className="btn btn-outline-secondary btn-sm py-2" onClick={onOpenProfileWizard}>
+                            <i className="bi bi-pencil-square me-1"></i> Edit 8-Stage Profile
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  /* Dynamic Incomplete Profile Checklist (Calculated according to real stages) */
+                  <div className="p-4 bg-light rounded-4 border">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <h6 className="fw-bold text-dark text-uppercase mb-0" style={{ fontSize: '0.78rem' }}>
+                        Profile Completeness
+                      </h6>
+                      <span className="badge bg-warning text-dark fw-bold">{completedCount}/8 Stages</span>
+                    </div>
+
+                    <div className="progress mb-2" style={{ height: '8px' }}>
+                      <div
+                        className="progress-bar bg-warning"
+                        role="progressbar"
+                        style={{ width: `${calculatedPercentage}%` }}
+                      ></div>
+                    </div>
+
+                    <div className="d-flex justify-content-between text-muted small mb-3">
+                      <span>{calculatedPercentage}% Complete</span>
+                      <span className="text-warning fw-bold">{8 - completedCount} stages remaining</span>
+                    </div>
+
+                    <ul className="list-unstyled small mb-4">
+                      {stagesList.map((stage, idx) => (
+                        <li
+                          key={idx}
+                          className={`mb-2 d-flex align-items-center gap-2 ${
+                            stage.isComplete ? 'text-success fw-semibold' : 'text-muted'
+                          }`}
+                        >
+                          <i
+                            className={`bi ${
+                              stage.isComplete ? 'bi-check-circle-fill text-success' : 'bi-circle text-secondary'
+                            }`}
+                          ></i>
+                          <span>{stage.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      className="btn btn-warning w-100 py-2 fw-bold text-dark shadow-sm d-flex align-items-center justify-content-center gap-1"
+                      onClick={onOpenProfileWizard}
+                    >
+                      <i className="bi bi-stars"></i>
+                      <span>Complete Remaining Stages</span>
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
