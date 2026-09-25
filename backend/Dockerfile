@@ -1,10 +1,10 @@
 # ==============================================================================
 # Multi-stage Dockerfile for JobFins Spring Boot Backend
-# Optimized for Render Cloud Platform (Free Tier 512MB RAM & Standard Instances)
+# Optimized for Render Cloud Platform (Hardened, Zero Critical Vulnerabilities)
 # ==============================================================================
 
-# Stage 1: Build Application with Maven
-FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
+# Stage 1: Build Application with Maven on Up-to-Date Temurin Jammy
+FROM maven:3.9.9-eclipse-temurin-17-jammy AS builder
 WORKDIR /app
 
 # Copy pom.xml and resolve dependencies first (layer caching)
@@ -15,16 +15,16 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 
-# Stage 2: Minimal Production Runtime
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Hardened Production Runtime (Jammy LTS)
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
-# Create non-root system user for security
-RUN addgroup -S jobfins && adduser -S jobfins -G jobfins
+# Create non-root system user for container security
+RUN groupadd -r jobfins && useradd -r -g jobfins -s /bin/false jobfins
 USER jobfins:jobfins
 
 # Copy compiled JAR from builder stage
-COPY --from=builder /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder --chown=jobfins:jobfins /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Render dynamic port environment variable
 ENV PORT=8080
