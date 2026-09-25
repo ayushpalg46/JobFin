@@ -1,11 +1,9 @@
 package com.jobfins.config;
 
-import com.jobfins.model.Account;
 import com.jobfins.model.Application;
 import com.jobfins.model.Job;
 import com.jobfins.model.Role;
 import com.jobfins.model.User;
-import com.jobfins.repository.AccountRepository;
 import com.jobfins.repository.ApplicationRepository;
 import com.jobfins.repository.JobRepository;
 import com.jobfins.repository.UserRepository;
@@ -15,8 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * DataInitializer seeds sample recruiters, seekers, jobs, applications,
- * and experiment 5 accounts into the database on first run.
+ * DataInitializer seeds sample recruiters, seekers, jobs, and applications
+ * into the database on first run.
  */
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -29,9 +27,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private ApplicationRepository applicationRepository;
-
-    @Autowired
-    private AccountRepository accountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
                     "recruiter@jobfins.com",
                     passwordEncoder.encode("password123"),
                     Role.ROLE_RECRUITER,
-                    "FinTech Global",
+                    "CloudTech Innovations",
                     "+91 9876543210",
                     "Senior Talent Acquisition Manager"
             );
@@ -84,7 +79,7 @@ public class DataInitializer implements CommandLineRunner {
                     Role.ROLE_SEEKER,
                     null,
                     "+91 9871234567",
-                    "Financial Analysis, Python, SQL, Tableau"
+                    "Data Analytics, Python, SQL, Cloud Architecture"
             );
             userRepository.save(seeker2);
 
@@ -102,13 +97,13 @@ public class DataInitializer implements CommandLineRunner {
             jobRepository.save(job1);
 
             Job job2 = new Job(
-                    "Financial Analyst & Quant Associate",
-                    "FinTech Global",
+                    "Cloud DevOps Engineer",
+                    "CloudTech Innovations",
                     "Remote",
                     "Full-time",
                     "₹12,00,000 - ₹18,00,000 / yr",
-                    "Analyze financial models, risk assessment, and market trends for fintech payment platforms.",
-                    "1. Degree in Finance / Engineering\n2. Experience with SQL and Excel modeling\n3. Understanding of fintech compliance",
+                    "Manage containerized deployments with Docker and Kubernetes, CI/CD pipelines, and cloud systems.",
+                    "1. Degree in Computer Science / Engineering\n2. Experience with Docker, Kubernetes and Linux\n3. CI/CD pipeline automation",
                     recruiter1
             );
             jobRepository.save(job2);
@@ -127,7 +122,7 @@ public class DataInitializer implements CommandLineRunner {
 
             Job job4 = new Job(
                     "Junior Software Intern",
-                    "FinTech Global",
+                    "CloudTech Innovations",
                     "Pune, Maharashtra",
                     "Internship",
                     "₹25,000 / month",
@@ -146,11 +141,6 @@ public class DataInitializer implements CommandLineRunner {
             );
             application1.setStatus("SHORTLISTED");
             applicationRepository.save(application1);
-
-            // 5. Create Sample Accounts for Experiment 5 (MySQL Integration)
-            accountRepository.save(new Account("ACC1001", "Sumeet Rathod", "SAVINGS", 150000.0));
-            accountRepository.save(new Account("ACC1002", "Pritha Rao", "CURRENT", 45000.0));
-            accountRepository.save(new Account("ACC1003", "Dhyana Singh", "SAVINGS", 300000.0));
 
             System.out.println(">>> Sample data seeded successfully! Demo accounts ready: recruiter@jobfins.com / seeker@jobfins.com (password: password123)");
         }

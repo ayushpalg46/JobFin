@@ -25,8 +25,6 @@ SELECT id, name, email, role, company_name, contact_number FROM users;
 SELECT id, title, company, location, job_type, salary FROM jobs;
 
 SELECT id, job_id, seeker_id, status, applied_date FROM applications;
-
-SELECT id, account_number, holder_name, account_type, balance FROM accounts;
 "@
 
 Write-Host "`n[SUCCESS] All JobFins database records retrieved from MySQL Server." -ForegroundColor Green

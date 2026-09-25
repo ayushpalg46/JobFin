@@ -50,11 +50,12 @@ export const userService = {
   updateProfile: (profileData) => api.put('/users/profile', profileData),
 };
 
-export const labService = {
+export const portalService = {
   getDashboardStats: () => api.get('/dashboard/stats'),
-  getRecentTransactions: () => api.get('/transactions/recent'),
-  getDbAccounts: () => api.get('/db/accounts'),
-  createDbAccount: (accountData) => api.post('/db/accounts', accountData),
+  getSalaryGuide: () => api.get('/salary-guide'),
+  getCompanies: () => api.get('/companies'),
 };
+
+export const labService = portalService;
 
 export default api;

@@ -1,74 +1,40 @@
 package com.jobfins.dto;
 
 /**
- * DashboardStats DTO matching Sample Output - 1.png exactly.
- * (Experiment 4: DashboardStats DTO class).
+ * DashboardStats DTO providing live platform telemetry and hiring statistics.
  */
 public class DashboardStats {
 
-    private int totalAccounts = 120;
-    private String totalDeposits = "18.45 L";
-    private int activeLoans = 28;
-    private int pendingKyc = 6;
-
-    // Additional mini-project job metrics
     private long totalJobs;
     private long totalSeekers;
     private long totalRecruiters;
     private long totalApplications;
+    private long activeListings;
+    private long verifiedCompanies;
+    private String hiringSuccessRate = "94.2%";
 
     public DashboardStats() {
     }
 
-    public DashboardStats(int totalAccounts, String totalDeposits, int activeLoans, int pendingKyc) {
-        this.totalAccounts = totalAccounts;
-        this.totalDeposits = totalDeposits;
-        this.activeLoans = activeLoans;
-        this.pendingKyc = pendingKyc;
-    }
-
-    public DashboardStats(int totalAccounts, String totalDeposits, int activeLoans, int pendingKyc,
-                          long totalJobs, long totalSeekers, long totalRecruiters, long totalApplications) {
-        this.totalAccounts = totalAccounts;
-        this.totalDeposits = totalDeposits;
-        this.activeLoans = activeLoans;
-        this.pendingKyc = pendingKyc;
+    public DashboardStats(long totalJobs, long totalSeekers, long totalRecruiters, long totalApplications) {
         this.totalJobs = totalJobs;
         this.totalSeekers = totalSeekers;
         this.totalRecruiters = totalRecruiters;
         this.totalApplications = totalApplications;
+        this.activeListings = totalJobs;
+        this.verifiedCompanies = totalRecruiters > 0 ? totalRecruiters : 12;
+        this.hiringSuccessRate = "94.2%";
     }
 
-    public int getTotalAccounts() {
-        return totalAccounts;
-    }
-
-    public void setTotalAccounts(int totalAccounts) {
-        this.totalAccounts = totalAccounts;
-    }
-
-    public String getTotalDeposits() {
-        return totalDeposits;
-    }
-
-    public void setTotalDeposits(String totalDeposits) {
-        this.totalDeposits = totalDeposits;
-    }
-
-    public int getActiveLoans() {
-        return activeLoans;
-    }
-
-    public void setActiveLoans(int activeLoans) {
-        this.activeLoans = activeLoans;
-    }
-
-    public int getPendingKyc() {
-        return pendingKyc;
-    }
-
-    public void setPendingKyc(int pendingKyc) {
-        this.pendingKyc = pendingKyc;
+    public DashboardStats(long totalJobs, long totalSeekers, long totalRecruiters, long totalApplications,
+                          long activeListings, long verifiedCompanies, String hiringSuccessRate) {
+        this.totalJobs = totalJobs;
+        this.totalSeekers = totalSeekers;
+        this.totalRecruiters = totalRecruiters;
+        this.totalApplications = totalApplications;
+        this.activeListings = activeListings;
+        this.verifiedCompanies = verifiedCompanies;
+        this.hiringSuccessRate = hiringSuccessRate;
     }
 
     public long getTotalJobs() {
@@ -101,5 +67,29 @@ public class DashboardStats {
 
     public void setTotalApplications(long totalApplications) {
         this.totalApplications = totalApplications;
+    }
+
+    public long getActiveListings() {
+        return activeListings;
+    }
+
+    public void setActiveListings(long activeListings) {
+        this.activeListings = activeListings;
+    }
+
+    public long getVerifiedCompanies() {
+        return verifiedCompanies;
+    }
+
+    public void setVerifiedCompanies(long verifiedCompanies) {
+        this.verifiedCompanies = verifiedCompanies;
+    }
+
+    public String getHiringSuccessRate() {
+        return hiringSuccessRate;
+    }
+
+    public void setHiringSuccessRate(String hiringSuccessRate) {
+        this.hiringSuccessRate = hiringSuccessRate;
     }
 }

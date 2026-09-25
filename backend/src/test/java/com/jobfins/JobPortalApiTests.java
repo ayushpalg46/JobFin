@@ -166,36 +166,27 @@ public class JobPortalApiTests {
 
     @Test
     @Order(10)
-    void testExp4RecentTransactionsEndpoint() throws Exception {
-        // Experiment 4: GET /api/transactions/recent (Matches Sample Output - 2.png)
-        mockMvc.perform(get("/api/transactions/recent"))
+    void testSalaryGuideEndpoint() throws Exception {
+        mockMvc.perform(get("/api/salary-guide"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value("TXN1001"))
-                .andExpect(jsonPath("$[0].holderName").value("Sumeet Rathod"))
-                .andExpect(jsonPath("$[0].amount").value(150000.0))
-                .andExpect(jsonPath("$[1].id").value("TXN1002"))
-                .andExpect(jsonPath("$[2].id").value("TXN1003"));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].role").value("Java Backend Developer"));
     }
 
     @Test
     @Order(11)
-    void testExp4DashboardStatsExactOutput() throws Exception {
-        // Experiment 4: GET /api/dashboard/stats (Matches Sample Output - 1.png)
+    void testDashboardStatsOutput() throws Exception {
         mockMvc.perform(get("/api/dashboard/stats"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalAccounts").value(120))
-                .andExpect(jsonPath("$.totalDeposits").value("18.45 L"))
-                .andExpect(jsonPath("$.activeLoans").value(28))
-                .andExpect(jsonPath("$.pendingKyc").value(6));
+                .andExpect(jsonPath("$.hiringSuccessRate").value("94.2%"));
     }
 
     @Test
     @Order(12)
-    void testExp5DatabaseAccountsList() throws Exception {
-        // Experiment 5: GET /api/db/accounts
-        mockMvc.perform(get("/api/db/accounts"))
+    void testCompaniesListEndpoint() throws Exception {
+        mockMvc.perform(get("/api/companies"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].accountNumber").exists());
+                .andExpect(jsonPath("$[0].name").exists());
     }
 }
