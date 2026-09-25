@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, onSwitchMode }) {
   // Form states
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState('ROLE_SEEKER');
 
   const [loading, setLoading] = useState(false);
@@ -42,16 +42,6 @@ export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, 
     }
   };
 
-  const handleQuickDemoFill = (type) => {
-    if (type === 'recruiter') {
-      setEmail('recruiter@jobfins.com');
-      setPassword('password123');
-    } else {
-      setEmail('seeker@jobfins.com');
-      setPassword('password123');
-    }
-  };
-
   return (
     <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(10,25,47,0.6)' }}>
       <div className="modal-dialog modal-dialog-centered">
@@ -67,20 +57,6 @@ export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, 
           <div className="modal-body">
             {error && <div className="alert alert-danger py-2 small">{error}</div>}
             {successMsg && <div className="alert alert-success py-2 small">{successMsg}</div>}
-
-            {mode === 'login' && (
-              <div className="bg-light p-2 rounded mb-3 border d-flex justify-content-between align-items-center">
-                <small className="text-muted fw-bold">Quick Demo Login:</small>
-                <div className="btn-group btn-group-sm">
-                  <button type="button" className="btn btn-outline-primary py-0" onClick={() => handleQuickDemoFill('recruiter')}>
-                    Recruiter
-                  </button>
-                  <button type="button" className="btn btn-outline-success py-0" onClick={() => handleQuickDemoFill('seeker')}>
-                    Seeker
-                  </button>
-                </div>
-              </div>
-            )}
 
             <form onSubmit={handleAuthSubmit}>
               {mode === 'register' && (

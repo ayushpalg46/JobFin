@@ -18,19 +18,6 @@ export default function AuthPage({ onLogin, onRegister, theme = 'light', onToggl
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
-  const handleQuickFill = (targetRole) => {
-    setError(null);
-    setSuccessMsg(null);
-    setMode('login');
-    if (targetRole === 'recruiter') {
-      setEmail('recruiter@jobfins.com');
-      setPassword('password123');
-    } else {
-      setEmail('seeker@jobfins.com');
-      setPassword('password123');
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -121,34 +108,6 @@ export default function AuthPage({ onLogin, onRegister, theme = 'light', onToggl
                   >
                     <i className="bi bi-person-plus me-1"></i> Create Account
                   </button>
-                </div>
-              </div>
-
-              {/* One-Click Quick Demo Bar */}
-              <div className="px-4 pt-3">
-                <div className="quick-demo-box p-2 rounded-3 border bg-white d-flex align-items-center justify-content-between">
-                  <div className="d-flex align-items-center gap-1 text-muted small fw-semibold">
-                    <i className="bi bi-lightning-charge-fill text-warning"></i>
-                    <span>Quick Demo:</span>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <button
-                      type="button"
-                      className="btn btn-outline-primary btn-sm py-1 px-2 fw-semibold"
-                      onClick={() => handleQuickFill('recruiter')}
-                      title="Auto-fill Recruiter credentials"
-                    >
-                      <i className="bi bi-briefcase me-1"></i> Recruiter
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-success btn-sm py-1 px-2 fw-semibold"
-                      onClick={() => handleQuickFill('seeker')}
-                      title="Auto-fill Job Seeker credentials"
-                    >
-                      <i className="bi bi-person me-1"></i> Candidate
-                    </button>
-                  </div>
                 </div>
               </div>
 
