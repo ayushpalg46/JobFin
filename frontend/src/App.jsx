@@ -8,6 +8,8 @@ import AuthPage from './components/AuthPage';
 import PostJobModal from './components/PostJobModal';
 import RecruiterDashboard from './components/RecruiterDashboard';
 import SeekerDashboard from './components/SeekerDashboard';
+import TalentSourcing from './components/TalentSourcing';
+import OfferBuilderModal from './components/OfferBuilderModal';
 import SalaryGuide from './components/SalaryGuide';
 import CareerTips from './components/CareerTips';
 import CompanyDirectory from './components/CompanyDirectory';
@@ -110,6 +112,8 @@ export default function App() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [postJobModalOpen, setPostJobModalOpen] = useState(false);
+  const [offerModalOpen, setOfferModalOpen] = useState(false);
+  const [offerCandidate, setOfferCandidate] = useState(null);
 
   // Stats
   const [stats, setStats] = useState(null);
@@ -315,6 +319,17 @@ export default function App() {
           <RecruiterDashboard
             user={user}
             onOpenPostJob={() => setPostJobModalOpen(true)}
+            onExtendOffer={(cand) => {
+              setOfferCandidate(cand);
+              setOfferModalOpen(true);
+            }}
+          />
+        ) : currentView === 'talent-sourcing' && user?.role === 'ROLE_RECRUITER' ? (
+          <TalentSourcing
+            onExtendOffer={(cand) => {
+              setOfferCandidate(cand);
+              setOfferModalOpen(true);
+            }}
           />
         ) : currentView === 'seeker-dashboard' && user?.role === 'ROLE_SEEKER' ? (
           <SeekerDashboard
@@ -440,6 +455,13 @@ export default function App() {
           setAuthMode('login');
           setAuthModalOpen(true);
         }}
+      />
+
+      <OfferBuilderModal
+        candidate={offerCandidate}
+        isOpen={offerModalOpen}
+        onClose={() => setOfferModalOpen(false)}
+        user={user}
       />
 
       <NotificationDrawer

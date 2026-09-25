@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { jobService, applicationService } from '../services/api';
 
-export default function RecruiterDashboard({ user, onOpenPostJob }) {
+export default function RecruiterDashboard({ user, onOpenPostJob, onExtendOffer }) {
   const [myJobs, setMyJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [activeTab, setActiveTab] = useState('jobs'); // 'jobs' or 'applicants'
@@ -206,6 +206,20 @@ export default function RecruiterDashboard({ user, onOpenPostJob }) {
                           title="Accept Candidate"
                         >
                           Accept
+                        </button>
+                        <button
+                          className="btn btn-cobalt"
+                          onClick={() =>
+                            onExtendOffer &&
+                            onExtendOffer({
+                              name: app.seeker?.name || 'Candidate',
+                              role: app.job?.title || 'Software Engineer',
+                              location: app.job?.location || 'Mumbai / Hybrid',
+                            })
+                          }
+                          title="Extend Formal Offer"
+                        >
+                          <i className="bi bi-file-earmark-check me-1"></i> Offer
                         </button>
                         <button
                           className="btn btn-outline-danger"

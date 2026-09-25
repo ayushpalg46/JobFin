@@ -77,14 +77,24 @@ export default function Navbar({
             </li>
 
             {user && user.role === 'ROLE_RECRUITER' && (
-              <li className="nav-item">
-                <a
-                  className={`nav-link nav-link-custom ${currentView === 'recruiter-dashboard' ? 'active' : ''}`}
-                  onClick={() => setCurrentView('recruiter-dashboard')}
-                >
-                  <i className="bi bi-kanban me-1"></i> Recruiter ATS
-                </a>
-              </li>
+              <>
+                <li className="nav-item">
+                  <a
+                    className={`nav-link nav-link-custom ${currentView === 'recruiter-dashboard' ? 'active' : ''}`}
+                    onClick={() => setCurrentView('recruiter-dashboard')}
+                  >
+                    <i className="bi bi-kanban me-1"></i> Recruiter ATS
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a
+                    className={`nav-link nav-link-custom ${currentView === 'talent-sourcing' ? 'active' : ''}`}
+                    onClick={() => setCurrentView('talent-sourcing')}
+                  >
+                    <i className="bi bi-person-search me-1"></i> Talent Sourcing
+                  </a>
+                </li>
+              </>
             )}
 
             {user && user.role === 'ROLE_SEEKER' && (
