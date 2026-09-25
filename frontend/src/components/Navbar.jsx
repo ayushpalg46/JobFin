@@ -107,14 +107,17 @@ export default function Navbar({
               </li>
             )}
 
-            <li className="nav-item">
-              <a
-                className={`nav-link nav-link-custom ${currentView === 'career-tips' ? 'active' : ''}`}
-                onClick={() => setCurrentView('career-tips')}
-              >
-                <i className="bi bi-lightbulb me-1"></i> Career Tips
-              </a>
-            </li>
+            {/* Show 'Career Tips' tab only for Job Seekers or unauthenticated visitors */}
+            {(!user || user.role !== 'ROLE_RECRUITER') && (
+              <li className="nav-item">
+                <a
+                  className={`nav-link nav-link-custom ${currentView === 'career-tips' ? 'active' : ''}`}
+                  onClick={() => setCurrentView('career-tips')}
+                >
+                  <i className="bi bi-lightbulb me-1"></i> Career Tips
+                </a>
+              </li>
+            )}
 
             {user && (
               <li className="nav-item">
