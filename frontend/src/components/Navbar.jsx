@@ -173,15 +173,30 @@ export default function Navbar({
                   )}
                 </button>
 
-                {/* Complete Profile Trigger */}
-                <button
-                  className="btn btn-outline-success btn-sm d-none d-md-inline-flex align-items-center gap-1"
-                  onClick={onOpenProfileWizard}
-                  title="Complete Onboarding Profile"
-                >
-                  <i className="bi bi-stars text-warning"></i>
-                  <span className="fw-semibold">Complete Profile</span>
-                </button>
+                {/* Dynamic Profile Completion Status Indicator */}
+                {!user?.completedProfile &&
+                localStorage.getItem('jobfins_profile_completed_' + user?.email) !== 'true' &&
+                localStorage.getItem('jobfins_profile_completed') !== 'true' &&
+                !user?.contactNumber ? (
+                  <button
+                    className="btn btn-outline-success btn-sm d-none d-md-inline-flex align-items-center gap-1"
+                    onClick={onOpenProfileWizard}
+                    title="Complete Onboarding Profile"
+                  >
+                    <i className="bi bi-stars text-warning"></i>
+                    <span className="fw-semibold">Complete Profile</span>
+                  </button>
+                ) : (
+                  <span
+                    className="badge bg-success-subtle text-success border border-success d-none d-md-inline-flex align-items-center gap-1 py-1 px-2 cursor-pointer"
+                    onClick={onOpenProfileWizard}
+                    title="Profile 100% Completed & Verified (Click to view/edit)"
+                    style={{ fontSize: '0.72rem' }}
+                  >
+                    <i className="bi bi-patch-check-fill text-success"></i>
+                    <span className="fw-bold">100% Profile</span>
+                  </span>
+                )}
 
                 {/* Profile Pill */}
                 <button

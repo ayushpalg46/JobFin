@@ -105,13 +105,24 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
             </div>
 
             <div className="d-flex gap-2">
-              <button
-                className="btn btn-warning btn-sm fw-bold px-3 shadow-sm text-dark d-flex align-items-center gap-1"
-                onClick={onOpenProfileWizard}
-              >
-                <i className="bi bi-stars"></i>
-                <span>Complete 8-Stage Profile</span>
-              </button>
+              {user?.completedProfile || user?.contactNumber ? (
+                <button
+                  className="btn btn-outline-light btn-sm fw-bold px-3 shadow-sm d-flex align-items-center gap-1"
+                  onClick={onOpenProfileWizard}
+                  title="Profile 100% Completed (Click to edit stages)"
+                >
+                  <i className="bi bi-patch-check-fill text-success"></i>
+                  <span>100% Profile Strength</span>
+                </button>
+              ) : (
+                <button
+                  className="btn btn-warning btn-sm fw-bold px-3 shadow-sm text-dark d-flex align-items-center gap-1"
+                  onClick={onOpenProfileWizard}
+                >
+                  <i className="bi bi-stars"></i>
+                  <span>Complete 8-Stage Profile</span>
+                </button>
+              )}
               <button
                 className="btn btn-light btn-sm fw-bold px-3 shadow-sm"
                 onClick={() => setEditing(!editing)}

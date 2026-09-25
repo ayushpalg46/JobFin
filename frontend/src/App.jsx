@@ -331,7 +331,12 @@ export default function App() {
   }
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const isProfileIncomplete = !localStorage.getItem('jobfins_profile_completed');
+  const isProfileIncomplete = !(
+    user?.completedProfile ||
+    localStorage.getItem('jobfins_profile_completed_' + user?.email) === 'true' ||
+    localStorage.getItem('jobfins_profile_completed') === 'true' ||
+    Boolean(user?.contactNumber && user?.name && (user?.role === 'ROLE_RECRUITER' ? user?.companyName : user?.bioOrSkills))
+  );
 
   return (
     <div className="d-flex flex-column min-vh-100">
