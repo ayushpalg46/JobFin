@@ -44,17 +44,14 @@ export default function AuthPage({ onLogin, onRegister, theme = 'light', onToggl
         }
         await onLogin(email.trim(), password.trim());
       } else {
-        if (!name.trim() || !email.trim() || !password.trim()) {
-          throw new Error('Please fill in all required fields.');
+        if (!email.trim() || !password.trim()) {
+          throw new Error('Please provide both email and password.');
         }
         await onRegister({
-          name: name.trim(),
+          name: email.trim().split('@')[0],
           email: email.trim(),
           password: password.trim(),
           role,
-          companyName: role === 'ROLE_RECRUITER' ? companyName.trim() : null,
-          contactNumber: contactNumber.trim(),
-          bioOrSkills: role === 'ROLE_SEEKER' ? bioOrSkills.trim() : null,
         });
 
         setSuccessMsg('Registration successful! Logging you in...');
@@ -174,107 +171,34 @@ export default function AuthPage({ onLogin, onRegister, theme = 'light', onToggl
               {/* Main Auth Form */}
               <form onSubmit={handleSubmit} className="p-4 pt-3">
                 {mode === 'register' && (
-                  <>
-                    {/* Role Selection Segment */}
-                    <div className="mb-3">
-                      <label className="form-label small fw-bold text-dark text-uppercase" style={{ fontSize: '0.72rem' }}>
-                        Choose Account Role
-                      </label>
-                      <div className="row g-2">
-                        <div className="col-6">
-                          <div
-                            className={`role-select-card p-2 rounded-3 border text-center cursor-pointer ${role === 'ROLE_SEEKER' ? 'active-role' : ''}`}
-                            onClick={() => setRole('ROLE_SEEKER')}
-                          >
-                            <i className="bi bi-person-badge display-6 text-primary d-block mb-1"></i>
-                            <div className="fw-bold small text-dark">Job Seeker</div>
-                            <small className="text-muted" style={{ fontSize: '0.68rem' }}>Find & Apply to Jobs</small>
-                          </div>
+                  /* Role Selection Segment */
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold text-dark text-uppercase" style={{ fontSize: '0.72rem' }}>
+                      Choose Account Role
+                    </label>
+                    <div className="row g-2">
+                      <div className="col-6">
+                        <div
+                          className={`role-select-card p-2 rounded-3 border text-center cursor-pointer ${role === 'ROLE_SEEKER' ? 'active-role' : ''}`}
+                          onClick={() => setRole('ROLE_SEEKER')}
+                        >
+                          <i className="bi bi-person-badge display-6 text-primary d-block mb-1"></i>
+                          <div className="fw-bold small text-dark">Job Seeker</div>
+                          <small className="text-muted" style={{ fontSize: '0.68rem' }}>Find & Apply to Jobs</small>
                         </div>
-                        <div className="col-6">
-                          <div
-                            className={`role-select-card p-2 rounded-3 border text-center cursor-pointer ${role === 'ROLE_RECRUITER' ? 'active-role' : ''}`}
-                            onClick={() => setRole('ROLE_RECRUITER')}
-                          >
-                            <i className="bi bi-building display-6 text-indigo d-block mb-1"></i>
-                            <div className="fw-bold small text-dark">Recruiter</div>
-                            <small className="text-muted" style={{ fontSize: '0.68rem' }}>Post & Hire Talent</small>
-                          </div>
+                      </div>
+                      <div className="col-6">
+                        <div
+                          className={`role-select-card p-2 rounded-3 border text-center cursor-pointer ${role === 'ROLE_RECRUITER' ? 'active-role' : ''}`}
+                          onClick={() => setRole('ROLE_RECRUITER')}
+                        >
+                          <i className="bi bi-building display-6 text-indigo d-block mb-1"></i>
+                          <div className="fw-bold small text-dark">Recruiter</div>
+                          <small className="text-muted" style={{ fontSize: '0.68rem' }}>Post & Hire Talent</small>
                         </div>
                       </div>
                     </div>
-
-                    {/* Full Name */}
-                    <div className="mb-3">
-                      <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>
-                        Full Name *
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-end-0"><i className="bi bi-person text-muted"></i></span>
-                        <input
-                          type="text"
-                          className="form-control border-start-0"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Rahul Sharma"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Recruiter / Seeker Dynamic Input */}
-                    {role === 'ROLE_RECRUITER' ? (
-                      <div className="mb-3">
-                        <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>
-                          Company / Organization *
-                        </label>
-                        <div className="input-group">
-                          <span className="input-group-text bg-light border-end-0"><i className="bi bi-building text-muted"></i></span>
-                          <input
-                            type="text"
-                            className="form-control border-start-0"
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                            placeholder="e.g. TechCorp Innovations"
-                            required
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="mb-3">
-                        <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>
-                          Key Skills & Expertise
-                        </label>
-                        <div className="input-group">
-                          <span className="input-group-text bg-light border-end-0"><i className="bi bi-code-slash text-muted"></i></span>
-                          <input
-                            type="text"
-                            className="form-control border-start-0"
-                            value={bioOrSkills}
-                            onChange={(e) => setBioOrSkills(e.target.value)}
-                            placeholder="e.g. Java, Spring Boot, MySQL, React"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Contact Number */}
-                    <div className="mb-3">
-                      <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>
-                        Contact Phone
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-end-0"><i className="bi bi-telephone text-muted"></i></span>
-                        <input
-                          type="tel"
-                          className="form-control border-start-0"
-                          value={contactNumber}
-                          onChange={(e) => setContactNumber(e.target.value)}
-                          placeholder="+91 98765 43210"
-                        />
-                      </div>
-                    </div>
-                  </>
+                  </div>
                 )}
 
                 {/* Email Address */}

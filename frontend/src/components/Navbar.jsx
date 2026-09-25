@@ -9,6 +9,7 @@ export default function Navbar({
   onOpenRegister,
   onOpenPostJob,
   onOpenNotifications,
+  onOpenProfileWizard,
   unreadCount = 0,
   theme = 'light',
   onToggleTheme,
@@ -170,6 +171,16 @@ export default function Navbar({
                       {unreadCount}
                     </span>
                   )}
+                </button>
+
+                {/* Complete Profile Trigger */}
+                <button
+                  className="btn btn-outline-success btn-sm d-none d-md-inline-flex align-items-center gap-1"
+                  onClick={onOpenProfileWizard}
+                  title="Complete Onboarding Profile"
+                >
+                  <i className="bi bi-stars text-warning"></i>
+                  <span className="fw-semibold">Complete Profile</span>
                 </button>
 
                 {/* Profile Pill */}

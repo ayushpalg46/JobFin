@@ -51,7 +51,12 @@ public class UserService {
 
         // Create new user entity and encode password (Experiment 6)
         User user = new User();
-        user.setName(request.getName());
+        String initialName = request.getName();
+        if (initialName == null || initialName.trim().isEmpty()) {
+            String emailPrefix = request.getEmail().split("@")[0];
+            initialName = emailPrefix.substring(0, 1).toUpperCase() + emailPrefix.substring(1);
+        }
+        user.setName(initialName);
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(userRole);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../services/api';
 
-export default function UserProfile({ user, onProfileUpdated, onFindJobs }) {
+export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpenProfileWizard }) {
   const isRecruiter = user?.role === 'ROLE_RECRUITER';
 
   // State
@@ -100,13 +100,22 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs }) {
               </div>
             </div>
 
-            <button
-              className="btn btn-light btn-sm fw-bold px-3 shadow-sm"
-              onClick={() => setEditing(!editing)}
-            >
-              <i className={`bi ${editing ? 'bi-x-lg' : 'bi-pencil-square'} me-1`}></i>
-              {editing ? 'Cancel Edit' : 'Edit Profile'}
-            </button>
+            <div className="d-flex gap-2">
+              <button
+                className="btn btn-warning btn-sm fw-bold px-3 shadow-sm text-dark d-flex align-items-center gap-1"
+                onClick={onOpenProfileWizard}
+              >
+                <i className="bi bi-stars"></i>
+                <span>Complete 8-Stage Profile</span>
+              </button>
+              <button
+                className="btn btn-light btn-sm fw-bold px-3 shadow-sm"
+                onClick={() => setEditing(!editing)}
+              >
+                <i className={`bi ${editing ? 'bi-x-lg' : 'bi-pencil-square'} me-1`}></i>
+                {editing ? 'Cancel' : 'Quick Edit'}
+              </button>
+            </div>
           </div>
         </div>
 

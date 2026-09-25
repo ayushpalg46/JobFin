@@ -4,11 +4,7 @@ export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, 
   // Form states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('password123');
-  const [name, setName] = useState('');
   const [role, setRole] = useState('ROLE_SEEKER');
-  const [companyName, setCompanyName] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [bioOrSkills, setBioOrSkills] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,13 +24,10 @@ export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, 
         onClose();
       } else {
         await onRegister({
-          name,
+          name: email.split('@')[0],
           email,
           password,
           role,
-          companyName: role === 'ROLE_RECRUITER' ? companyName : null,
-          contactNumber,
-          bioOrSkills: role === 'ROLE_SEEKER' ? bioOrSkills : null,
         });
         setSuccessMsg('Registration successful! Logging you in...');
         setTimeout(async () => {
@@ -91,67 +84,17 @@ export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, 
 
             <form onSubmit={handleAuthSubmit}>
               {mode === 'register' && (
-                <>
-                  <div className="mb-3">
-                    <label className="form-label small fw-bold">I am a:</label>
-                    <select
-                      className="form-select form-select-sm"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                    >
-                      <option value="ROLE_SEEKER">Job Seeker (Applying for jobs)</option>
-                      <option value="ROLE_RECRUITER">Job Recruiter (Hiring talent)</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label small fw-bold">Full Name</label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Rahul Sharma"
-                      required
-                    />
-                  </div>
-
-                  {role === 'ROLE_RECRUITER' ? (
-                    <div className="mb-3">
-                      <label className="form-label small fw-bold">Company / Organization</label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        value={companyName}
-                        onChange={(e) => setCompanyName(e.target.value)}
-                        placeholder="e.g. TechCorp Solutions"
-                        required
-                      />
-                    </div>
-                  ) : (
-                    <div className="mb-3">
-                      <label className="form-label small fw-bold">Key Skills</label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        value={bioOrSkills}
-                        onChange={(e) => setBioOrSkills(e.target.value)}
-                        placeholder="e.g. Java, Spring Boot, MySQL, React"
-                      />
-                    </div>
-                  )}
-
-                  <div className="mb-3">
-                    <label className="form-label small fw-bold">Contact Number</label>
-                    <input
-                      type="tel"
-                      className="form-control form-control-sm"
-                      value={contactNumber}
-                      onChange={(e) => setContactNumber(e.target.value)}
-                      placeholder="+91 9876543210"
-                    />
-                  </div>
-                </>
+                <div className="mb-3">
+                  <label className="form-label small fw-bold">I am a:</label>
+                  <select
+                    className="form-select form-select-sm"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                    <option value="ROLE_SEEKER">Job Seeker (Applying for jobs)</option>
+                    <option value="ROLE_RECRUITER">Job Recruiter (Hiring talent)</option>
+                  </select>
+                </div>
               )}
 
               <div className="mb-3">
