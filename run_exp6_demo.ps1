@@ -83,7 +83,7 @@ Write-Host ($protectedResponse | ConvertTo-Json)
 # -------------------------------------------------------------------
 Write-Host "`n[STEP 4] Access Protected Route WITHOUT Bearer Token (Security Validation)" -ForegroundColor Magenta
 try {
-    $unauthResponse = Invoke-RestMethod -Uri "$baseUrl/applications/recruiter/all" -Method Get
+    $null = Invoke-RestMethod -Uri "$baseUrl/applications/recruiter/all" -Method Get
     Write-Host "Unexpected Success!" -ForegroundColor Red
 } catch {
     Write-Host "Security Filter Blocked Request: $($_.Exception.Message)" -ForegroundColor Red
