@@ -1,21 +1,21 @@
 # ==============================================================================
 # Multi-stage Dockerfile for JobFins Spring Boot Backend
-# Optimized for Render Cloud Platform (Hardened, Zero Critical Vulnerabilities)
+# Optimized for Render Cloud Platform
 # ==============================================================================
 
-# Stage 1: Build Application with Maven on Official Eclipse Temurin 17
+# Stage 1: Build Application with Maven
 FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-# Copy pom.xml and resolve dependencies first (layer caching)
-COPY pom.xml .
+# Copy pom.xml and dependencies (from backend directory)
+COPY backend/pom.xml ./pom.xml
 RUN mvn dependency:go-offline -B
 
 # Copy source code and package executable fat JAR
-COPY src ./src
+COPY backend/src ./src
 RUN mvn clean package -DskipTests -B
 
-# Stage 2: Hardened Production Runtime (LTS)
+# Stage 2: Hardened Production Runtime
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
