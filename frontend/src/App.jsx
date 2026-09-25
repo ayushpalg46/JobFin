@@ -23,60 +23,94 @@ const getInitialNotifications = (role) => {
     return [
       {
         id: 1,
-        title: 'New Application Received',
-        message: 'Sarah Jenkins applied for Senior Full Stack Java Developer.',
-        time: '10 mins ago',
+        title: 'New Candidate Applied',
+        message: 'Ayush Sharma (Java 17, Spring Boot, MySQL) submitted an application for "Java Backend Developer".',
+        time: '5 mins ago',
         type: 'application',
-        icon: 'bi-person-badge',
+        category: 'Inbound Applicant',
+        icon: 'bi-person-plus-fill',
         read: false,
+        actionView: 'recruiter-dashboard',
       },
       {
         id: 2,
-        title: 'Candidate Shortlisted',
-        message: 'Rahul Sharma was moved to Technical Screening Round.',
-        time: '2 hours ago',
-        type: 'status',
-        icon: 'bi-check2-circle',
+        title: 'Talent Sourcing Match (98%)',
+        message: 'Ayzen Vance (Ex-QuantFunds, 7.5 Yrs Exp) matches your requisition for Distributed Systems Lead.',
+        time: '35 mins ago',
+        type: 'sourcing',
+        category: 'Talent Match',
+        icon: 'bi-stars',
         read: false,
+        actionView: 'talent-sourcing',
       },
       {
         id: 3,
-        title: 'Job Posting Performance',
-        message: 'Your job post for Cloud Architect received 42 new views today.',
-        time: '5 hours ago',
+        title: 'Interview Loop Pending',
+        message: '2 shortlisted candidates are waiting for interview calendar slot confirmation.',
+        time: '2 hours ago',
+        type: 'interview',
+        category: 'Hiring Pipeline',
+        icon: 'bi-calendar-check',
+        read: false,
+        actionView: 'recruiter-dashboard',
+      },
+      {
+        id: 4,
+        title: 'Listing Impressions Spike',
+        message: 'Your job posting "Cloud DevOps Engineer" received 124 new impressions and 8 saves today.',
+        time: '4 hours ago',
         type: 'info',
+        category: 'Analytics',
         icon: 'bi-graph-up-arrow',
         read: true,
+        actionView: 'recruiter-dashboard',
       },
     ];
   } else {
     return [
       {
         id: 101,
-        title: 'Interview Invitation Scheduled',
-        message: 'Google Cloud invited you for a Technical Round on Thursday at 3:00 PM.',
-        time: '15 mins ago',
-        type: 'interview',
-        icon: 'bi-calendar-check',
+        title: 'Application Shortlisted! 🎉',
+        message: 'TechCorp Innovations reviewed your profile for "Java Backend Developer" and moved you to Shortlisted.',
+        time: '12 mins ago',
+        type: 'status',
+        category: 'Status Update',
+        icon: 'bi-patch-check-fill',
         read: false,
+        actionView: 'seeker-dashboard',
       },
       {
         id: 102,
-        title: 'Application Shortlisted',
-        message: 'TechCorp reviewed your profile for Senior Java Engineer and moved you forward.',
+        title: 'Technical Interview Scheduled',
+        message: 'TechCorp scheduled your Spring Boot & MySQL System Design round for Friday at 11:00 AM IST.',
         time: '1 hour ago',
-        type: 'status',
-        icon: 'bi-patch-check-fill',
+        type: 'interview',
+        category: 'Interview Invite',
+        icon: 'bi-camera-video-fill',
         read: false,
+        actionView: 'seeker-dashboard',
       },
       {
         id: 103,
-        title: 'Matching Job Opportunity',
-        message: 'Amazon posted "Backend Engineer (Spring Boot & AWS)" matching your skill profile.',
-        time: '4 hours ago',
+        title: 'New High-Match Vacancy',
+        message: 'CloudScale Technologies posted "Cloud DevOps Engineer (₹10-18 LPA)" matching your Docker & AWS skills.',
+        time: '3 hours ago',
         type: 'application',
+        category: 'Job Recommendation',
         icon: 'bi-briefcase-fill',
+        read: false,
+        actionView: 'home',
+      },
+      {
+        id: 104,
+        title: 'Profile Viewed by Recruiter',
+        message: 'Lead Technical Recruiter from FinPay Solutions viewed your verified skills and resume.',
+        time: '5 hours ago',
+        type: 'info',
+        category: 'Profile Activity',
+        icon: 'bi-eye-fill',
         read: true,
+        actionView: 'seeker-dashboard',
       },
     ];
   }
@@ -265,14 +299,12 @@ export default function App() {
       prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
     );
     setNotificationsOpen(false);
-    if (user?.role === 'ROLE_RECRUITER') {
+    if (notif.actionView) {
+      setCurrentView(notif.actionView);
+    } else if (user?.role === 'ROLE_RECRUITER') {
       setCurrentView('recruiter-dashboard');
     } else {
-      if (notif.type === 'interview' || notif.type === 'status') {
-        setCurrentView('seeker-dashboard');
-      } else {
-        setCurrentView('home');
-      }
+      setCurrentView('seeker-dashboard');
     }
   };
 
