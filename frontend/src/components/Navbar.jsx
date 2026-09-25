@@ -19,7 +19,7 @@ export default function Navbar({
         {/* Top Brand Logo */}
         <a
           className="navbar-brand d-flex align-items-center cursor-pointer"
-          onClick={() => setCurrentView('home')}
+          onClick={() => setCurrentView(user?.role === 'ROLE_RECRUITER' ? 'recruiter-dashboard' : 'home')}
         >
           <img src="/logo.svg" alt="JobFins Logo" style={{ maxHeight: '42px', width: 'auto', objectFit: 'contain' }} />
         </a>
@@ -40,42 +40,19 @@ export default function Navbar({
         {/* Horizontal Navigation Links - Centered */}
         <div className="collapse navbar-collapse" id="reactNavbarContent">
           <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <a
-                className={`nav-link nav-link-custom ${currentView === 'home' ? 'active' : ''}`}
-                onClick={() => setCurrentView('home')}
-              >
-                <i className="bi bi-briefcase me-1"></i> Jobs
-              </a>
-            </li>
+            {/* Show 'Jobs' tab only for Job Seekers or unauthenticated visitors */}
+            {(!user || user.role !== 'ROLE_RECRUITER') && (
+              <li className="nav-item">
+                <a
+                  className={`nav-link nav-link-custom ${currentView === 'home' ? 'active' : ''}`}
+                  onClick={() => setCurrentView('home')}
+                >
+                  <i className="bi bi-briefcase me-1"></i> Jobs
+                </a>
+              </li>
+            )}
 
-            <li className="nav-item">
-              <a
-                className={`nav-link nav-link-custom ${currentView === 'salary-guide' ? 'active' : ''}`}
-                onClick={() => setCurrentView('salary-guide')}
-              >
-                <i className="bi bi-cash-coin me-1"></i> Salary Guides
-              </a>
-            </li>
-
-            <li className="nav-item">
-              <a
-                className={`nav-link nav-link-custom ${currentView === 'companies' ? 'active' : ''}`}
-                onClick={() => setCurrentView('companies')}
-              >
-                <i className="bi bi-buildings me-1"></i> Companies
-              </a>
-            </li>
-
-            <li className="nav-item">
-              <a
-                className={`nav-link nav-link-custom ${currentView === 'career-tips' ? 'active' : ''}`}
-                onClick={() => setCurrentView('career-tips')}
-              >
-                <i className="bi bi-lightbulb me-1"></i> Career Tips
-              </a>
-            </li>
-
+            {/* Recruiter-only dedicated Navigation Links */}
             {user && user.role === 'ROLE_RECRUITER' && (
               <>
                 <li className="nav-item">
@@ -97,6 +74,7 @@ export default function Navbar({
               </>
             )}
 
+            {/* Job Seeker dedicated Navigation Links */}
             {user && user.role === 'ROLE_SEEKER' && (
               <li className="nav-item">
                 <a
@@ -107,6 +85,36 @@ export default function Navbar({
                 </a>
               </li>
             )}
+
+            <li className="nav-item">
+              <a
+                className={`nav-link nav-link-custom ${currentView === 'salary-guide' ? 'active' : ''}`}
+                onClick={() => setCurrentView('salary-guide')}
+              >
+                <i className="bi bi-cash-coin me-1"></i> Salary Guides
+              </a>
+            </li>
+
+            {/* Show 'Companies' tab only for Job Seekers or unauthenticated visitors */}
+            {(!user || user.role !== 'ROLE_RECRUITER') && (
+              <li className="nav-item">
+                <a
+                  className={`nav-link nav-link-custom ${currentView === 'companies' ? 'active' : ''}`}
+                  onClick={() => setCurrentView('companies')}
+                >
+                  <i className="bi bi-buildings me-1"></i> Companies
+                </a>
+              </li>
+            )}
+
+            <li className="nav-item">
+              <a
+                className={`nav-link nav-link-custom ${currentView === 'career-tips' ? 'active' : ''}`}
+                onClick={() => setCurrentView('career-tips')}
+              >
+                <i className="bi bi-lightbulb me-1"></i> Career Tips
+              </a>
+            </li>
 
             {user && (
               <li className="nav-item">
