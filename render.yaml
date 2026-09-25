@@ -1,11 +1,10 @@
 # ==============================================================================
-# Render Blueprint Specification for JobFins
-# Automatically builds and orchestrates Backend, Frontend, and Database services
+# Render Blueprint Specification for JobFins (MySQL Production)
 # ==============================================================================
 
 services:
   # ----------------------------------------------------------------------------
-  # 1. Spring Boot Backend Web Service (Docker)
+  # 1. Spring Boot Backend Web Service (Docker - MySQL Connected)
   # ----------------------------------------------------------------------------
   - type: web
     name: jobfins-backend
@@ -19,11 +18,14 @@ services:
       - key: PORT
         value: 8080
       - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: jobfins-postgres
-          property: connectionString
-      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
-        value: org.postgresql.Driver
+        sync: false
+        placeholder: "jdbc:mysql://<host>:<port>/<dbname>?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+        placeholder: "root"
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+        placeholder: "your_mysql_password"
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
       - key: SPRING_JPA_SHOW_SQL
@@ -53,13 +55,3 @@ services:
           name: jobfins-backend
           property: host
           value: https://jobfins-backend.onrender.com/api
-
-# ------------------------------------------------------------------------------
-# 3. Managed PostgreSQL Database on Render
-# ------------------------------------------------------------------------------
-databases:
-  - name: jobfins-postgres
-    plan: free
-    region: oregon
-    databaseName: jobfins_db
-    user: jobfins_user
