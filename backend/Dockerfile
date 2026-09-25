@@ -3,8 +3,8 @@
 # Optimized for Render Cloud Platform (Hardened, Zero Critical Vulnerabilities)
 # ==============================================================================
 
-# Stage 1: Build Application with Maven on Up-to-Date Temurin Jammy
-FROM maven:3.9.9-eclipse-temurin-17-jammy AS builder
+# Stage 1: Build Application with Maven on Official Eclipse Temurin 17
+FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 # Copy pom.xml and resolve dependencies first (layer caching)
@@ -15,8 +15,8 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 
-# Stage 2: Hardened Production Runtime (Jammy LTS)
-FROM eclipse-temurin:17-jre-jammy
+# Stage 2: Hardened Production Runtime (LTS)
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Create non-root system user for container security
