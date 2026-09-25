@@ -48,6 +48,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- PostgreSQL Connector for Render Database Connection -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- H2 in-memory database (optional fallback for development/testing) -->
 		<dependency>
 			<groupId>com.h2database</groupId>

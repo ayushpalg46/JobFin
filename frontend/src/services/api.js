@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Base API URL for Spring Boot backend (Experiment 4, 5, 6)
-const API_BASE_URL = 'http://localhost:8080/api';
+// Base API URL for Spring Boot backend (Configurable via VITE_API_BASE_URL on Render/Vercel)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8080/api' : '/api');
 
 const api = axios.create({
   baseURL: API_BASE_URL,

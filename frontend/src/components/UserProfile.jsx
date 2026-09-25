@@ -8,13 +8,13 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
   const [email] = useState(user?.email || '');
-  const [contactNumber, setContactNumber] = useState(user?.contactNumber || '+91 98765 43210');
-  const [companyName, setCompanyName] = useState(user?.companyName || 'TechCorp Innovations');
-  const [bioOrSkills, setBioOrSkills] = useState(user?.bioOrSkills || 'Java 17, Spring Boot, MySQL, React.js, Docker, Microservices');
-  const [experienceLevel, setExperienceLevel] = useState('Mid-Level (3-5 Yrs)');
-  const [location, setLocation] = useState(isRecruiter ? 'Bangalore HQ' : 'Mumbai / Remote');
-  const [resumeUrl, setResumeUrl] = useState('https://drive.google.com/your-verified-resume.pdf');
-  const [companyWebsite, setCompanyWebsite] = useState('https://techcorp-innovations.com');
+  const [contactNumber, setContactNumber] = useState(user?.contactNumber || '');
+  const [companyName, setCompanyName] = useState(user?.companyName || '');
+  const [bioOrSkills, setBioOrSkills] = useState(user?.bioOrSkills || '');
+  const [experienceLevel, setExperienceLevel] = useState(user?.experienceLevel || 'Mid-Level (3-5 Yrs)');
+  const [location, setLocation] = useState(user?.location || (isRecruiter ? 'Bangalore HQ' : 'Remote'));
+  const [resumeUrl, setResumeUrl] = useState(user?.resumeUrl || '');
+  const [companyWebsite, setCompanyWebsite] = useState(user?.companyWebsite || '');
 
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -82,10 +82,14 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div className="d-flex align-items-center gap-4">
               <div
-                className="rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center shadow-lg"
+                className="rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center shadow-lg overflow-hidden"
                 style={{ width: '80px', height: '80px', fontSize: '2rem' }}
               >
-                {name?.charAt(0) || 'U'}
+                {user?.profilePic ? (
+                  <img src={user.profilePic} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  name?.charAt(0)?.toUpperCase() || 'U'
+                )}
               </div>
               <div>
                 <span className={`badge ${isRecruiter ? 'bg-primary' : 'bg-success'} text-white mb-2`}>
@@ -95,7 +99,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                 <div className="d-flex flex-wrap gap-3 small text-white-50">
                   <span><i className="bi bi-envelope me-1"></i>{email}</span>
                   <span><i className="bi bi-telephone me-1"></i>{contactNumber || 'No phone added'}</span>
-                  <span><i className="bi bi-geo-alt me-1"></i>{location}</span>
+                  <span><i className="bi bi-geo-alt me-1"></i>{location || 'India'}</span>
                 </div>
               </div>
             </div>

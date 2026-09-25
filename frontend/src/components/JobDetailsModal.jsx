@@ -79,31 +79,40 @@ export default function JobDetailsModal({ job, isOpen, onClose, onApplySubmit, u
 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
-                    <label className="form-label small fw-bold">Cover Letter / Note</label>
+                    <label className="form-label small fw-bold">Cover Letter / Application Note *</label>
                     <textarea
                       className="form-control form-control-sm"
                       rows="4"
                       value={coverLetter}
                       onChange={(e) => setCoverLetter(e.target.value)}
-                      placeholder="Highlight your skills and relevant experience..."
+                      placeholder="Highlight your key technical skills and suitability for this role..."
                       required
                     ></textarea>
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label small fw-bold">Resume Link (PDF / Drive)</label>
+                    <label className="form-label small fw-bold">Resume Attachment / Link *</label>
+                    {user?.resumeFileName ? (
+                      <div className="p-2 mb-2 bg-light border rounded d-flex align-items-center justify-content-between">
+                        <div className="d-flex align-items-center gap-2">
+                          <i className="bi bi-file-earmark-pdf text-danger fs-5"></i>
+                          <small className="fw-semibold text-dark">{user.resumeFileName}</small>
+                        </div>
+                        <span className="badge bg-success">Profile Resume</span>
+                      </div>
+                    ) : null}
                     <input
-                      type="url"
+                      type="text"
                       className="form-control form-control-sm"
                       value={resumeLink}
                       onChange={(e) => setResumeLink(e.target.value)}
-                      placeholder="https://drive.google.com/resume.pdf"
-                      required
+                      placeholder={user?.resumeFileName ? "Or provide alternative URL / portfolio..." : "Paste resume URL / portfolio..."}
+                      required={!user?.resumeFileName}
                     />
                   </div>
 
-                  <button type="submit" className="btn btn-cobalt w-100 btn-sm py-2" disabled={submitting}>
-                    {submitting ? 'Submitting...' : 'Submit Application'}
+                  <button type="submit" className="btn btn-cobalt w-100 btn-sm py-2 fw-bold" disabled={submitting}>
+                    {submitting ? 'Submitting Application...' : 'Submit Application'}
                   </button>
                 </form>
               </div>
