@@ -54,4 +54,13 @@ public class SystemInfoController {
                 "repository", "https://github.com/ayushpalg46/JobFin.git"
         ));
     }
+
+    /**
+     * Secured endpoint for JWT validation testing (Experiment 6).
+     * GET /api/hello
+     */
+    @GetMapping("/hello")
+    public ResponseEntity<String> sayHello() {
+        return ResponseEntity.ok("Hello! Access granted via valid JWT Token.");
+    }
 }

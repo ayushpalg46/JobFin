@@ -65,4 +65,13 @@ public class AuthController {
         User user = userService.getUserByEmail(authentication.getName());
         return ResponseEntity.ok(user);
     }
+
+    /**
+     * Secured endpoint for JWT validation testing (Experiment 6).
+     * GET /api/auth/hello
+     */
+    @GetMapping("/hello")
+    public ResponseEntity<String> sayHello(Authentication authentication) {
+        return ResponseEntity.ok("Hello! Access granted via valid JWT Token.");
+    }
 }
