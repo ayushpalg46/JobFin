@@ -17,19 +17,8 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      - key: SPRING_DATASOURCE_URL
-        sync: false
-        placeholder: "jdbc:mysql://<host>:<port>/<dbname>?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-      - key: SPRING_DATASOURCE_USERNAME
-        sync: false
-        placeholder: "root"
-      - key: SPRING_DATASOURCE_PASSWORD
-        sync: false
-        placeholder: "your_mysql_password"
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
-      - key: SPRING_JPA_SHOW_SQL
-        value: false
       - key: JWT_SECRET
         generateValue: true
 
