@@ -10,6 +10,11 @@ export default function JobCard({ job, onSelectJob, onApplyJob }) {
     }
   };
 
+  const formatSalary = (salary) => {
+    if (!salary) return 'Competitive Salary';
+    return salary.replace(/\?(\s*\d)/g, '₹$1');
+  };
+
   return (
     <div className="col-md-6 col-lg-6">
       <div className="job-card">
@@ -46,7 +51,7 @@ export default function JobCard({ job, onSelectJob, onApplyJob }) {
             <small className="text-muted d-block">
               <i className="bi bi-geo-alt me-1"></i> {job.location}
             </small>
-            <strong className="text-success">{job.salary || 'Competitive Salary'}</strong>
+            <strong className="text-success">{formatSalary(job.salary)}</strong>
           </div>
           <div className="d-flex gap-2">
             <button className="btn btn-outline-custom btn-sm" onClick={() => onSelectJob(job)}>

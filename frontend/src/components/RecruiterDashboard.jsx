@@ -126,7 +126,7 @@ export default function RecruiterDashboard({ user, onOpenPostJob, onExtendOffer 
                     </td>
                     <td><i className="bi bi-geo-alt text-muted me-1"></i>{job.location}</td>
                     <td><span className="badge bg-light text-primary border">{job.jobType}</span></td>
-                    <td className="text-success fw-semibold">{job.salary || 'N/A'}</td>
+                    <td className="text-success fw-semibold">{job.salary ? job.salary.replace(/\?(\s*\d)/g, '₹$1') : 'N/A'}</td>
                     <td className="small text-muted">{job.postedDate?.substring(0, 10)}</td>
                     <td className="text-end">
                       <button className="btn btn-outline-danger btn-sm py-1 px-2" onClick={() => handleDeleteJob(job.id)}>

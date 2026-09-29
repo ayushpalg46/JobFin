@@ -144,5 +144,16 @@ public class DataInitializer implements CommandLineRunner {
 
             System.out.println(">>> Sample data seeded successfully! Demo accounts ready: recruiter@jobfins.com / seeker@jobfins.com (password: password123)");
         }
+
+        // Auto-correct any legacy question mark characters in job salaries from previous non-UTF8 sessions
+        try {
+            for (Job job : jobRepository.findAll()) {
+                if (job.getSalary() != null && job.getSalary().contains("?")) {
+                    job.setSalary(job.getSalary().replaceAll("\\?(\\s*\\d)", "₹$1"));
+                    jobRepository.save(job);
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 }
