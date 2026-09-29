@@ -46,11 +46,13 @@ export default function AuthModal({ isOpen, mode, onClose, onLogin, onRegister, 
     <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(10,25,47,0.6)' }}>
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title fw-bold text-dark">
-              <i className={`bi ${mode === 'login' ? 'bi-lock-fill text-primary' : 'bi-person-plus-fill text-success'} me-2`}></i>
-              {mode === 'login' ? 'Sign In to JobFin' : 'Create an Account'}
-            </h5>
+          <div className="modal-header align-items-center">
+            <div className="d-flex align-items-center gap-2">
+              <img src="/logo.svg" alt="JobFins Logo" style={{ height: '28px', width: 'auto', objectFit: 'contain' }} />
+              <h5 className="modal-title fw-bold text-dark mb-0">
+                {mode === 'login' ? 'Sign In to JobFins' : 'Create an Account'}
+              </h5>
+            </div>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
 
