@@ -99,25 +99,25 @@ export default function HeroSearch({
         <div className="row g-3 justify-content-center mt-4">
           <div className="col-6 col-md-3">
             <div className="telemetry-card">
-              <div className="stat-num">{stats?.totalJobs ? `${stats.totalJobs} Active` : '4 Active'}</div>
+              <div className="stat-num">{stats?.totalJobs !== undefined ? `${stats.totalJobs} Active` : '4 Active'}</div>
               <div className="stat-label">Verified Job Posts</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
             <div className="telemetry-card">
-              <div className="stat-num text-primary">{stats?.totalRecruiters || 2} Recruiters</div>
+              <div className="stat-num text-primary">{stats?.totalRecruiters !== undefined ? `${stats.totalRecruiters} Recruiters` : '2 Recruiters'}</div>
               <div className="stat-label">Top Hiring Companies</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
             <div className="telemetry-card">
-              <div className="stat-num text-success">{stats?.totalSeekers || 2} Candidates</div>
+              <div className="stat-num text-success">{stats?.totalSeekers !== undefined ? `${stats.totalSeekers} Candidates` : '2 Candidates'}</div>
               <div className="stat-label">Registered Seekers</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
             <div className="telemetry-card">
-              <div className="stat-num text-info">98.4%</div>
+              <div className="stat-num text-info">{stats?.placementRate || '98.4%'}</div>
               <div className="stat-label">Verified Placement Rate</div>
             </div>
           </div>
