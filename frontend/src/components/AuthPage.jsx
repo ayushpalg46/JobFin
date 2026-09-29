@@ -66,11 +66,14 @@ export default function AuthPage({ onLogin, onRegister }) {
               
               {/* Brand Top Header */}
               <div className="auth-card-header text-center p-4 pb-3 border-bottom">
-                <div className="d-flex justify-content-center mb-2">
-                  <img src="/logo.svg" alt="JobFins Logo" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+                <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
+                  <img src="/logo.svg" alt="JobFins Logo" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
+                  <span className="brand-title fs-3 mb-0">
+                    <span className="brand-job">Job</span><span className="brand-fins">Fins</span>
+                  </span>
                 </div>
                 <h4 className="fw-bold text-dark mb-1">
-                  {mode === 'login' ? 'Welcome to JobFins' : 'Join the JobFins Network'}
+                  {mode === 'login' ? 'Welcome Back' : 'Create an Account'}
                 </h4>
                 <p className="text-muted small mb-0">
                   {mode === 'login' 

@@ -3,7 +3,7 @@
    Inspired by Google Stitch Design: Executive Kinetic & Fintech Precision
    =================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
 
 :root {
   --primary-navy: #0A192F;
@@ -17,7 +17,7 @@
   --text-main: #0B1C30;
   --text-muted: #64748B;
   --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -29,18 +29,26 @@ body {
   padding-top: 72px; /* For fixed horizontal navbar */
 }
 
-/* Brand Title & Logo (Plus Jakarta Sans 800) */
-.brand-title, .brand-font, .brand-jobfin {
+/* 1. Logo / “JobFins” Wordmark (Plus Jakarta Sans 700-800, tight spacing) */
+.brand-title, .brand-font, .brand-jobfin, .logo-text {
   font-family: var(--font-heading);
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.75px;
 }
 
-/* Headings & Job Titles (Plus Jakarta Sans 700) */
-h1, h2, h3, h4, h5, h6, .job-title, .role-title, .hero-title {
+.brand-job {
+  color: var(--primary-navy);
+}
+
+.brand-fins {
+  color: var(--secondary-cobalt);
+}
+
+/* 2. Website Headings (Plus Jakarta Sans 700) */
+h1, h2, h3, h4, h5, h6, .job-title, .role-title, .hero-title, .section-heading {
   font-family: var(--font-heading);
   font-weight: 700;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.5px;
 }
 
 /* Salaries, Key Metrics & Application Counts (Plus Jakarta Sans 700) */
@@ -49,29 +57,22 @@ h1, h2, h3, h4, h5, h6, .job-title, .role-title, .hero-title {
   font-weight: 700;
 }
 
-/* Buttons & Action Links (Plus Jakarta Sans 600) */
-.btn, .btn-cobalt, .btn-navy, .btn-outline-custom, .btn-apply {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-/* Navigation Links (Plus Jakarta Sans 500) */
-.nav-link-custom {
-  font-family: var(--font-heading);
-  font-weight: 500;
-}
-
-/* Company Names & Entities (DM Sans 500) */
-.company-name, .company-title, .recruiter-org {
-  font-family: var(--font-body);
-  font-weight: 500;
-}
-
-/* Search Inputs, Placeholders, Descriptions & Meta (DM Sans 400) */
-input, select, textarea, .form-control, .form-select, .job-desc, .job-meta, p, .text-muted, .small {
+/* 3. Body Text (Inter 400-500) */
+p, .job-desc, .job-meta, .text-muted, .small, input, select, textarea, .form-control, .form-select, .table {
   font-family: var(--font-body);
   font-weight: 400;
+}
+
+.company-name, .company-title, .recruiter-org, .fw-medium, .meta-semibold {
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+/* 4. Buttons / Navigation (Inter 600) */
+.btn, .btn-cobalt, .btn-navy, .btn-outline-custom, .btn-apply, .nav-link, .nav-link-custom, .navbar-nav .nav-link {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 /* Horizontal Top Navigation Bar */

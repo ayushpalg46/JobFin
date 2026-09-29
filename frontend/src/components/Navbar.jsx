@@ -14,10 +14,13 @@ export default function Navbar({
       <div className="container-fluid px-lg-5">
         {/* Top Brand Logo */}
         <a
-          className="navbar-brand d-flex align-items-center cursor-pointer"
+          className="navbar-brand d-flex align-items-center gap-2 cursor-pointer"
           onClick={() => setCurrentView(user?.role === 'ROLE_RECRUITER' ? 'recruiter-dashboard' : 'home')}
         >
-          <img src="/logo.svg" alt="JobFins Logo" style={{ maxHeight: '42px', width: 'auto', objectFit: 'contain' }} />
+          <img src="/logo.svg" alt="JobFins Logo" style={{ maxHeight: '36px', width: 'auto', objectFit: 'contain' }} />
+          <span className="brand-title fs-4 mb-0">
+            <span className="brand-job">Job</span><span className="brand-fins">Fins</span>
+          </span>
         </a>
 
         {/* Mobile Toggle Button */}
