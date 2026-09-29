@@ -37,13 +37,15 @@ export default function JobCard({ job, onSelectJob, onApplyJob }) {
             {job.description?.length > 120 ? `${job.description.substring(0, 120)}...` : job.description}
           </p>
 
-          <div className="d-flex flex-wrap gap-1 my-2">
-            {job.requirements?.split('\n').slice(0, 3).map((req, idx) => (
-              <span key={idx} className="badge bg-light text-secondary border small">
-                {req.replace(/^[0-9.]+\s*/, '')}
-              </span>
-            ))}
-          </div>
+          {job.requirements && (
+            <ul className="mb-2 ps-3 text-muted" style={{ fontSize: '0.81rem', lineHeight: '1.45' }}>
+              {job.requirements.split('\n').filter(r => r.trim()).slice(0, 3).map((req, idx) => (
+                <li key={idx} className="mb-1 text-truncate" title={req.replace(/^[0-9.]+\s*/, '').trim()}>
+                  {req.replace(/^[0-9.]+\s*/, '').trim()}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
