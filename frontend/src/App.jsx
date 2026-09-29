@@ -14,7 +14,6 @@ import SalaryGuide from './components/SalaryGuide';
 import CareerTips from './components/CareerTips';
 import CompanyDirectory from './components/CompanyDirectory';
 import UserProfile from './components/UserProfile';
-import ProfileCompletionWizard from './components/ProfileCompletionWizard';
 import Footer from './components/Footer';
 import { authService, jobService, applicationService, labService } from './services/api';
 
@@ -39,10 +38,6 @@ export default function App() {
   const [locationFilter, setLocationFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [loadingJobs, setLoadingJobs] = useState(true);
-
-  // State for Profile Completion Wizard
-  const [profileWizardOpen, setProfileWizardOpen] = useState(false);
-  const [dismissProfileBanner, setDismissProfileBanner] = useState(false);
 
   // Selected job & Modals
   const [selectedJob, setSelectedJob] = useState(null);
@@ -140,11 +135,6 @@ export default function App() {
     } else {
       setCurrentView('home');
     }
-
-    // Launch Profile Completion Wizard if profile is not completed
-    if (!localStorage.getItem('jobfins_profile_completed')) {
-      setTimeout(() => setProfileWizardOpen(true), 600);
-    }
   };
 
   const handleRegister = async (registerData) => {
@@ -181,13 +171,6 @@ export default function App() {
     );
   }
 
-  const isProfileIncomplete = !(
-    user?.completedProfile ||
-    localStorage.getItem('jobfins_profile_completed_' + user?.email) === 'true' ||
-    localStorage.getItem('jobfins_profile_completed') === 'true' ||
-    Boolean(user?.contactNumber && user?.name && (user?.role === 'ROLE_RECRUITER' ? user?.companyName : user?.bioOrSkills))
-  );
-
   return (
     <div className="d-flex flex-column min-vh-100">
       {/* Top Horizontal Navigation Bar */}
@@ -205,43 +188,12 @@ export default function App() {
           setAuthModalOpen(true);
         }}
         onOpenPostJob={() => setPostJobModalOpen(true)}
-        onOpenProfileWizard={() => setProfileWizardOpen(true)}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
 
-      {/* Onboarding / Profile Completeness Banner */}
-      {isProfileIncomplete && !dismissProfileBanner && (
-        <div className="bg-primary text-white py-2 px-3 shadow-sm border-bottom" style={{ marginTop: '70px' }}>
-          <div className="container d-flex flex-wrap align-items-center justify-content-between gap-2">
-            <div className="d-flex align-items-center gap-2">
-              <span className="badge bg-warning text-dark fw-bold">⚡ Onboarding</span>
-              <span className="small">
-                Complete your <b>8-Stage {user.role === 'ROLE_RECRUITER' ? 'Recruiter' : 'Career'} Profile</b> to unlock 100% visibility & instant match rankings!
-              </span>
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <button
-                className="btn btn-warning btn-sm fw-bold px-3 text-dark d-flex align-items-center gap-1 shadow-sm"
-                onClick={() => setProfileWizardOpen(true)}
-              >
-                <i className="bi bi-stars"></i>
-                <span>Complete Profile (8 Steps)</span>
-              </button>
-              <button
-                className="btn btn-sm btn-link text-white p-0 text-decoration-none"
-                onClick={() => setDismissProfileBanner(true)}
-                title="Dismiss"
-              >
-                <i className="bi bi-x-lg"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Content Area */}
-      <main className="flex-grow-1" style={{ marginTop: isProfileIncomplete && !dismissProfileBanner ? '0' : '70px' }}>
+      <main className="flex-grow-1" style={{ marginTop: '70px' }}>
         {currentView === 'recruiter-dashboard' && user?.role === 'ROLE_RECRUITER' ? (
           <RecruiterDashboard
             user={user}
@@ -268,7 +220,6 @@ export default function App() {
             user={user}
             onProfileUpdated={(updatedUser) => setUser(updatedUser)}
             onFindJobs={() => setCurrentView('home')}
-            onOpenProfileWizard={() => setProfileWizardOpen(true)}
             onOpenPostJob={() => setPostJobModalOpen(true)}
           />
         ) : currentView === 'salary-guide' ? (
@@ -391,13 +342,6 @@ export default function App() {
         isOpen={offerModalOpen}
         onClose={() => setOfferModalOpen(false)}
         user={user}
-      />
-
-      <ProfileCompletionWizard
-        isOpen={profileWizardOpen}
-        onClose={() => setProfileWizardOpen(false)}
-        user={user}
-        onProfileUpdated={(updatedUser) => setUser(updatedUser)}
       />
 
       {/* Footer */}

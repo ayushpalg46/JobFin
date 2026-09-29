@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { userService } from '../services/api';
 
-export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpenProfileWizard, onOpenPostJob }) {
+export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpenPostJob }) {
   const isRecruiter = user?.role === 'ROLE_RECRUITER';
 
   // State
@@ -26,44 +26,10 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
       setCompanyName(user.companyName || '');
       setBioOrSkills(user.bioOrSkills || '');
       setLocation(user.location || (isRecruiter ? 'Bangalore HQ' : 'Remote'));
+      setResumeUrl(user.resumeUrl || '');
+      setCompanyWebsite(user.companyWebsite || '');
     }
   }, [user, isRecruiter]);
-
-  // Determine profile completeness based on localStorage or user properties
-  const isExplicitlyCompleted = Boolean(
-    user?.completedProfile ||
-    user?.profileStrength === 100 ||
-    localStorage.getItem('jobfins_profile_completed_' + user?.email) === 'true' ||
-    localStorage.getItem('jobfins_profile_completed') === 'true'
-  );
-
-  // Dynamic 8-stage verification matrix
-  const candidateStages = [
-    { label: 'Basic Identity (Name & Email)', isComplete: Boolean(user?.name && user?.email) },
-    { label: 'Phone & Mobile Verified', isComplete: Boolean(user?.contactNumber) },
-    { label: 'Resume / CV Document', isComplete: Boolean(user?.resumeFileName || user?.resumeUrl || user?.resumeBase64 || isExplicitlyCompleted) },
-    { label: 'Experience & History', isComplete: Boolean(user?.experienceLevel || (user?.experiences && user.experiences.length > 0) || isExplicitlyCompleted) },
-    { label: 'Technical Skills & Arsenal', isComplete: Boolean(user?.bioOrSkills || (user?.seekerSkills && user.seekerSkills.length > 0) || isExplicitlyCompleted) },
-    { label: 'Professional Bio & Summary', isComplete: Boolean(user?.summary || user?.bioOrSkills || isExplicitlyCompleted) },
-    { label: 'Target CTC & Notice Period', isComplete: Boolean(user?.expectedCtc || user?.noticePeriod || isExplicitlyCompleted) },
-    { label: 'Profile Picture / Avatar', isComplete: Boolean(user?.profilePic || user?.githubUrl || isExplicitlyCompleted) },
-  ];
-
-  const recruiterStages = [
-    { label: 'Recruiter Identity (Name & Email)', isComplete: Boolean(user?.name && user?.email) },
-    { label: 'Mobile & Contact Number', isComplete: Boolean(user?.contactNumber) },
-    { label: 'Corporate Registration / KYC', isComplete: Boolean(user?.gstin || user?.cinNumber || isExplicitlyCompleted) },
-    { label: 'Company Overview & Website', isComplete: Boolean(user?.companyName && (user?.companyWebsite || isExplicitlyCompleted)) },
-    { label: 'Target Hiring Tech Stack', isComplete: Boolean(user?.bioOrSkills || (user?.hiringDomains && user.hiringDomains.length > 0) || isExplicitlyCompleted) },
-    { label: 'Recruiter Bio & Designation', isComplete: Boolean(user?.summary || user?.designation || isExplicitlyCompleted) },
-    { label: 'Hiring Model & Preferences', isComplete: Boolean(user?.hiringVolume || isExplicitlyCompleted) },
-    { label: 'Corporate Avatar / Logo', isComplete: Boolean(user?.profilePic || isExplicitlyCompleted) },
-  ];
-
-  const stagesList = isRecruiter ? recruiterStages : candidateStages;
-  const completedCount = isExplicitlyCompleted ? 8 : stagesList.filter((s) => s.isComplete).length;
-  const calculatedPercentage = isExplicitlyCompleted ? 100 : Math.round((completedCount / 8) * 100);
-  const isProfileComplete = isExplicitlyCompleted || completedCount === 8;
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
@@ -82,6 +48,10 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
       const updatedUser = {
         ...user,
         ...res.data,
+        location: location.trim(),
+        resumeUrl: resumeUrl.trim(),
+        companyWebsite: companyWebsite.trim(),
+        experienceLevel,
       };
 
       // Save locally
@@ -100,6 +70,10 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
         contactNumber,
         companyName: isRecruiter ? companyName : null,
         bioOrSkills: !isRecruiter ? bioOrSkills : null,
+        location,
+        resumeUrl,
+        companyWebsite,
+        experienceLevel,
       };
       localStorage.setItem('jobfins_user', JSON.stringify(updatedUser));
       onProfileUpdated(updatedUser);
@@ -142,30 +116,12 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
             </div>
 
             <div className="d-flex gap-2">
-              {isProfileComplete ? (
-                <button
-                  className="btn btn-outline-light btn-sm fw-bold px-3 shadow-sm d-flex align-items-center gap-1"
-                  onClick={onOpenProfileWizard}
-                  title="Profile 100% Completed (Click to edit stages)"
-                >
-                  <i className="bi bi-patch-check-fill text-success"></i>
-                  <span>100% Profile Strength</span>
-                </button>
-              ) : (
-                <button
-                  className="btn btn-warning btn-sm fw-bold px-3 shadow-sm text-dark d-flex align-items-center gap-1"
-                  onClick={onOpenProfileWizard}
-                >
-                  <i className="bi bi-stars"></i>
-                  <span>Complete 8-Stage Profile ({calculatedPercentage}%)</span>
-                </button>
-              )}
               <button
                 className="btn btn-light btn-sm fw-bold px-3 shadow-sm"
                 onClick={() => setEditing(!editing)}
               >
                 <i className={`bi ${editing ? 'bi-x-lg' : 'bi-pencil-square'} me-1`}></i>
-                {editing ? 'Cancel' : 'Quick Edit'}
+                {editing ? 'Cancel' : 'Edit Profile'}
               </button>
             </div>
           </div>
@@ -340,7 +296,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                           </span>
                         ))
                       ) : (
-                        <span className="text-muted small">No skills added yet. Complete your profile stages to add skills.</span>
+                        <span className="text-muted small">No skills added yet. Click "Edit Profile" to add your skills.</span>
                       )}
                     </div>
 
@@ -385,9 +341,9 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                         <button
                           type="button"
                           className="btn btn-outline-secondary btn-sm px-3"
-                          onClick={onOpenProfileWizard}
+                          onClick={() => setEditing(true)}
                         >
-                          <i className="bi bi-upload me-1"></i> Upload CV
+                          <i className="bi bi-pencil me-1"></i> Add Link
                         </button>
                       )}
                     </div>
@@ -395,119 +351,67 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                 )}
               </div>
 
-              {/* Right Column: Dynamic Profile State */}
+              {/* Right Column: Account Status Card */}
               <div className="col-lg-4">
-                {isProfileComplete ? (
-                  /* When profile is 100% complete, REMOVE incomplete profile checklist and show Verified Account card */
-                  <div className="p-4 bg-white rounded-4 border shadow-sm">
-                    <div className="d-flex align-items-center gap-3 mb-3">
-                      <div
-                        className="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm"
-                        style={{ width: '42px', height: '42px', minWidth: '42px' }}
-                      >
-                        <i className="bi bi-shield-check fs-4"></i>
-                      </div>
-                      <div>
-                        <h6 className="fw-bold text-dark mb-0">Verified Profile Active</h6>
-                        <span className="badge bg-success-subtle text-success border border-success-subtle" style={{ fontSize: '0.72rem' }}>
-                          <i className="bi bi-check2-all me-1"></i> 100% Completed
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-muted small mb-3">
-                      All 8 onboarding stages are fully completed and verified. Your profile is ranked with top recruiter visibility across JobFins.
-                    </p>
-
-                    <div className="p-3 bg-light rounded-3 border mb-3 small">
-                      <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted">Account Status</span>
-                        <span className="text-success fw-bold"><i className="bi bi-check-circle-fill me-1"></i> Active & Verified</span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted">Security Tier</span>
-                        <span className="text-dark fw-semibold">JWT Session Valid</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span className="text-muted">Database Sync</span>
-                        <span className="text-primary fw-semibold">Cloud MySQL Synced</span>
-                      </div>
-                    </div>
-
-                    <div className="d-grid gap-2">
-                      {isRecruiter ? (
-                        <>
-                          {onOpenPostJob && (
-                            <button className="btn btn-cobalt fw-bold py-2 shadow-sm" onClick={onOpenPostJob}>
-                              <i className="bi bi-plus-circle me-1"></i> Post New Job
-                            </button>
-                          )}
-                          <button className="btn btn-outline-secondary btn-sm py-2" onClick={onOpenProfileWizard}>
-                            <i className="bi bi-sliders me-1"></i> Edit 8-Stage Details
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button className="btn btn-cobalt fw-bold py-2 shadow-sm" onClick={onFindJobs}>
-                            <i className="bi bi-search me-1"></i> Search Matching Jobs
-                          </button>
-                          <button className="btn btn-outline-secondary btn-sm py-2" onClick={onOpenProfileWizard}>
-                            <i className="bi bi-pencil-square me-1"></i> Edit 8-Stage Profile
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  /* Dynamic Incomplete Profile Checklist (Calculated according to real stages) */
-                  <div className="p-4 bg-light rounded-4 border">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <h6 className="fw-bold text-dark text-uppercase mb-0" style={{ fontSize: '0.78rem' }}>
-                        Profile Completeness
-                      </h6>
-                      <span className="badge bg-warning text-dark fw-bold">{completedCount}/8 Stages</span>
-                    </div>
-
-                    <div className="progress mb-2" style={{ height: '8px' }}>
-                      <div
-                        className="progress-bar bg-warning"
-                        role="progressbar"
-                        style={{ width: `${calculatedPercentage}%` }}
-                      ></div>
-                    </div>
-
-                    <div className="d-flex justify-content-between text-muted small mb-3">
-                      <span>{calculatedPercentage}% Complete</span>
-                      <span className="text-warning fw-bold">{8 - completedCount} stages remaining</span>
-                    </div>
-
-                    <ul className="list-unstyled small mb-4">
-                      {stagesList.map((stage, idx) => (
-                        <li
-                          key={idx}
-                          className={`mb-2 d-flex align-items-center gap-2 ${
-                            stage.isComplete ? 'text-success fw-semibold' : 'text-muted'
-                          }`}
-                        >
-                          <i
-                            className={`bi ${
-                              stage.isComplete ? 'bi-check-circle-fill text-success' : 'bi-circle text-secondary'
-                            }`}
-                          ></i>
-                          <span>{stage.label}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <button
-                      className="btn btn-warning w-100 py-2 fw-bold text-dark shadow-sm d-flex align-items-center justify-content-center gap-1"
-                      onClick={onOpenProfileWizard}
+                <div className="p-4 bg-white rounded-4 border shadow-sm">
+                  <div className="d-flex align-items-center gap-3 mb-3">
+                    <div
+                      className="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm"
+                      style={{ width: '42px', height: '42px', minWidth: '42px' }}
                     >
-                      <i className="bi bi-stars"></i>
-                      <span>Complete Remaining Stages</span>
-                    </button>
+                      <i className="bi bi-shield-check fs-4"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-bold text-dark mb-0">Verified Account</h6>
+                      <span className="badge bg-success-subtle text-success border border-success-subtle" style={{ fontSize: '0.72rem' }}>
+                        Active Profile
+                      </span>
+                    </div>
                   </div>
-                )}
+
+                  <p className="text-muted small mb-3">
+                    Your profile is active on JobFins. Manage your details, search matching vacancies, or publish new job opportunities.
+                  </p>
+
+                  <div className="p-3 bg-light rounded-3 border mb-3 small">
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="text-muted">Account Status</span>
+                      <span className="text-success fw-bold"><i className="bi bi-check-circle-fill me-1"></i> Active</span>
+                    </div>
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="text-muted">Security Tier</span>
+                      <span className="text-dark fw-semibold">JWT Session Valid</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span className="text-muted">Database Sync</span>
+                      <span className="text-primary fw-semibold">Cloud MySQL Synced</span>
+                    </div>
+                  </div>
+
+                  <div className="d-grid gap-2">
+                    {isRecruiter ? (
+                      <>
+                        {onOpenPostJob && (
+                          <button className="btn btn-cobalt fw-bold py-2 shadow-sm" onClick={onOpenPostJob}>
+                            <i className="bi bi-plus-circle me-1"></i> Post New Job
+                          </button>
+                        )}
+                        <button className="btn btn-outline-secondary btn-sm py-2" onClick={() => setEditing(true)}>
+                          <i className="bi bi-pencil-square me-1"></i> Edit Company Profile
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button className="btn btn-cobalt fw-bold py-2 shadow-sm" onClick={onFindJobs}>
+                          <i className="bi bi-search me-1"></i> Search Matching Jobs
+                        </button>
+                        <button className="btn btn-outline-secondary btn-sm py-2" onClick={() => setEditing(true)}>
+                          <i className="bi bi-pencil-square me-1"></i> Edit Candidate Profile
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
