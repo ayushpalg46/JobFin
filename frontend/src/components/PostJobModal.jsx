@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 export default function PostJobModal({ isOpen, onClose, onJobCreated, user, onOpenLogin }) {
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState(user?.companyName || '');
-  const [location, setLocation] = useState('Mumbai, Maharashtra');
+  const [location, setLocation] = useState('');
   const [jobType, setJobType] = useState('Full-time');
-  const [salary, setSalary] = useState('₹12,00,000 - ₹18,00,000 / yr');
+  const [salary, setSalary] = useState('');
   const [description, setDescription] = useState('');
-  const [requirements, setRequirements] = useState('1. Bachelor’s degree in CS/IT/Finance\n2. Relevant industry experience\n3. Strong communication skills');
+  const [requirements, setRequirements] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -64,7 +64,7 @@ export default function PostJobModal({ isOpen, onClose, onJobCreated, user, onOp
                 <h6 className="fw-bold text-dark">Recruiter Access Required</h6>
                 <p className="text-muted small">You need to be logged in with a Recruiter account to post job vacancies.</p>
                 <button className="btn btn-cobalt btn-sm px-4" onClick={() => { onClose(); onOpenLogin(); }}>
-                  Sign In as Recruiter (recruiter@jobfins.com)
+                  Sign In as Recruiter
                 </button>
               </div>
             ) : (

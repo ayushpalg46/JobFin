@@ -619,12 +619,11 @@
           <form id="staticLoginForm" onsubmit="handleStaticLogin(event)">
             <div class="mb-3">
               <label class="form-label small fw-bold">Email Address</label>
-              <input type="email" class="form-control" id="loginEmail" placeholder="e.g. seeker@jobfins.com" required />
-              <small class="text-muted">Demo: <code>recruiter@jobfins.com</code> or <code>seeker@jobfins.com</code></small>
+              <input type="email" class="form-control" id="loginEmail" placeholder="name@domain.com" required />
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold">Password</label>
-              <input type="password" class="form-control" id="loginPassword" value="password123" required />
+              <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required />
             </div>
             <button type="submit" class="btn btn-cobalt w-100 py-2">Sign In with JWT</button>
           </form>
@@ -984,13 +983,12 @@
         return;
       }
 
-      let name = (email === 'recruiter@jobfins.com' || currentGatewayRole === 'ROLE_RECRUITER') ? 'TechCorp Recruiter' : 'Ayush Sharma';
-      let role = (email === 'recruiter@jobfins.com' || currentGatewayRole === 'ROLE_RECRUITER') ? 'ROLE_RECRUITER' : 'ROLE_SEEKER';
+      let name = email.split('@')[0];
+      let role = currentGatewayRole;
 
       if (currentGatewayMode === 'register') {
         const inputName = document.getElementById('gatewayName').value.trim();
         if (inputName) name = inputName;
-        role = currentGatewayRole;
       }
 
       alertBox.innerHTML = `<div class="alert alert-success py-2 small"><i class="bi bi-check-circle me-1"></i> Authentication successful! Launching JobFins Portal...</div>`;
