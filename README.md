@@ -46,19 +46,26 @@ docker compose up --build
 
 ---
 
-## 🔑 Demo Login Credentials (Preloaded in MySQL)
+---
 
-| Role | Email | Password | Permissions |
-| :--- | :--- | :--- | :--- |
-| **Recruiter** | `recruiter@jobfins.com` | `password123` | Post jobs, manage listings, view applicants, accept/reject candidates |
-| **Job Seeker** | `seeker@jobfins.com` | `password123` | Search jobs, filter, submit applications, track application status |
+## 🌐 Deploying to Render (Blueprint Deployment)
+
+JobFins includes a production-ready `render.yaml` blueprint:
+
+1. Connect your GitHub repository to **[Render](https://render.com/)**.
+2. Create a **Blueprint Instance** referencing `render.yaml`.
+3. Set your production MySQL / PostgreSQL credentials in the environment variables:
+   - `SPRING_DATASOURCE_URL`: `jdbc:mysql://<host>:<port>/<dbname>?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8`
+   - `SPRING_DATASOURCE_USERNAME`: `<username>`
+   - `SPRING_DATASOURCE_PASSWORD`: `<password>`
+4. Render will automatically build the Spring Boot Docker backend and the Vite static frontend.
 
 ---
 
 ## 🔬 Core REST API Endpoints
 
-- **Live Job Listings**: `GET http://localhost:8080/api/jobs`
-- **Dashboard Metrics**: `GET http://localhost:8080/api/dashboard/stats`
-- **Salary Guide**: `GET http://localhost:8080/api/salary-guide`
-- **Company Directory**: `GET http://localhost:8080/api/companies`
-- **Authentication**: `POST http://localhost:8080/api/auth/login` and `POST http://localhost:8080/api/auth/register`
+- **Live Job Listings**: `GET /api/jobs`
+- **Dashboard Metrics**: `GET /api/dashboard/stats`
+- **Salary Guide**: `GET /api/salary-guide`
+- **Company Directory**: `GET /api/companies`
+- **Authentication**: `POST /api/auth/login` and `POST /api/auth/register`
