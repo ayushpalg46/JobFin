@@ -8,8 +8,6 @@ export default function Navbar({
   onOpenLogin,
   onOpenRegister,
   onOpenPostJob,
-  theme = 'light',
-  onToggleTheme,
 }) {
   return (
     <nav className="navbar navbar-expand-lg navbar-custom fixed-top">
@@ -131,16 +129,6 @@ export default function Navbar({
 
           {/* Right Action Bar */}
           <div className="d-flex align-items-center gap-2">
-            {/* Dark/Light Mode Switcher */}
-            <button
-              className="btn btn-light border rounded-circle d-flex align-items-center justify-content-center p-2"
-              style={{ width: '38px', height: '38px' }}
-              onClick={onToggleTheme}
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              <i className={`bi ${theme === 'dark' ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill text-primary'}`}></i>
-            </button>
-
             {!user ? (
               <>
                 <button className="btn btn-outline-custom btn-sm px-3" onClick={onOpenLogin}>

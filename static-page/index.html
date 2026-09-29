@@ -22,14 +22,7 @@
   <!-- ===================================================================
        0. Required Authentication Gateway (Login / Sign Up First)
        =================================================================== -->
-  <div id="staticAuthGateway" class="auth-gateway-wrapper d-flex align-items-center justify-content-center min-vh-100 py-5 position-relative">
-    <!-- Floating Theme Switcher for Gateway -->
-    <div class="position-absolute top-0 end-0 m-4 z-3">
-      <button class="btn btn-light shadow-sm border rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 42px; height: 42px;" onclick="toggleStaticTheme()" title="Toggle Dark/Light Mode">
-        <i class="bi bi-moon-stars-fill text-primary fs-5" id="staticGatewayThemeIcon"></i>
-      </button>
-    </div>
-
+  <div id="staticAuthGateway" class="auth-gateway-wrapper d-flex align-items-center justify-content-center min-vh-100 py-5">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-7 col-xl-6">
@@ -199,11 +192,6 @@
 
         <!-- Right Side User Profile & Actions -->
         <div class="d-flex align-items-center gap-2">
-          <!-- Theme Switcher Button -->
-          <button class="btn btn-light border rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 38px; height: 38px;" onclick="toggleStaticTheme()" title="Toggle Dark/Light Mode">
-            <i class="bi bi-moon-stars-fill text-primary" id="staticNavbarThemeIcon"></i>
-          </button>
-
           <!-- Profile Button -->
           <button class="btn btn-outline-custom btn-sm d-flex align-items-center gap-2 px-3" data-bs-toggle="modal" data-bs-target="#profileModal" title="Manage Profile">
             <i class="bi bi-person-circle"></i>
@@ -880,37 +868,10 @@
   <script>
     let currentGatewayMode = 'login';
     let currentGatewayRole = 'ROLE_SEEKER';
-    let currentStaticTheme = localStorage.getItem('jobfins_theme') || 'light';
 
     document.addEventListener('DOMContentLoaded', () => {
-      initStaticTheme();
       checkStaticAuth();
     });
-
-    function initStaticTheme() {
-      document.documentElement.setAttribute('data-theme', currentStaticTheme);
-      updateThemeIcons();
-    }
-
-    function toggleStaticTheme() {
-      currentStaticTheme = currentStaticTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', currentStaticTheme);
-      localStorage.setItem('jobfins_theme', currentStaticTheme);
-      updateThemeIcons();
-    }
-
-    function updateThemeIcons() {
-      const gwIcon = document.getElementById('staticGatewayThemeIcon');
-      const navIcon = document.getElementById('staticNavbarThemeIcon');
-      const isDark = currentStaticTheme === 'dark';
-      
-      if (gwIcon) {
-        gwIcon.className = isDark ? 'bi bi-sun-fill text-warning fs-5' : 'bi bi-moon-stars-fill text-primary fs-5';
-      }
-      if (navIcon) {
-        navIcon.className = isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill text-primary';
-      }
-    }
 
     function checkStaticAuth() {
       const savedUser = sessionStorage.getItem('jobfins_static_user');

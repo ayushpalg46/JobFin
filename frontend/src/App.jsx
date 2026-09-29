@@ -18,11 +18,6 @@ import Footer from './components/Footer';
 import { authService, jobService, applicationService, labService } from './services/api';
 
 export default function App() {
-  // Theme state: 'light' or 'dark'
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('jobfins_theme') || 'light';
-  });
-
   // Authentication state
   const [user, setUser] = useState(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -48,15 +43,6 @@ export default function App() {
 
   // Stats
   const [stats, setStats] = useState(null);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('jobfins_theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
 
   useEffect(() => {
     checkSavedAuth();
@@ -165,8 +151,6 @@ export default function App() {
       <AuthPage
         onLogin={handleLogin}
         onRegister={handleRegister}
-        theme={theme}
-        onToggleTheme={toggleTheme}
       />
     );
   }
@@ -188,8 +172,6 @@ export default function App() {
           setAuthModalOpen(true);
         }}
         onOpenPostJob={() => setPostJobModalOpen(true)}
-        theme={theme}
-        onToggleTheme={toggleTheme}
       />
 
       {/* Main Content Area */}

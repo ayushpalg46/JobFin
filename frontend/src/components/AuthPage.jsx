@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AuthPage({ onLogin, onRegister, theme = 'light', onToggleTheme }) {
+export default function AuthPage({ onLogin, onRegister }) {
   const [mode, setMode] = useState('login'); // 'login' or 'register'
   
   // Form fields
@@ -56,19 +56,7 @@ export default function AuthPage({ onLogin, onRegister, theme = 'light', onToggl
   };
 
   return (
-    <div className="auth-gateway-wrapper d-flex align-items-center justify-content-center py-5 px-3 position-relative">
-      {/* Floating Theme Switcher */}
-      <div className="position-absolute top-0 end-0 m-4 z-3">
-        <button
-          className="btn btn-light shadow-sm border rounded-circle d-flex align-items-center justify-content-center p-2"
-          style={{ width: '42px', height: '42px' }}
-          onClick={onToggleTheme}
-          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          <i className={`bi ${theme === 'dark' ? 'bi-sun-fill text-warning fs-5' : 'bi-moon-stars-fill text-primary fs-5'}`}></i>
-        </button>
-      </div>
-
+    <div className="auth-gateway-wrapper d-flex align-items-center justify-content-center py-5 px-3">
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-7 col-xl-6">
