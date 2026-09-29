@@ -335,20 +335,20 @@ p, .job-desc, .job-meta, .text-muted, .small, input, select, textarea, .form-con
 
 /* Footer */
 footer {
-  background: #0A192F;
-  color: #CBD5E1;
+  background: #FFFFFF;
+  color: #0B1C30;
   padding: 3.5rem 0 2rem 0;
-  border-top: 1px solid #1E293B;
+  border-top: 1px solid var(--border-color);
 }
 
 footer a {
-  color: #94A3B8;
+  color: #64748B;
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 footer a:hover {
-  color: #FFFFFF;
+  color: var(--secondary-cobalt);
 }
 
 /* Authentication Gateway Page */
