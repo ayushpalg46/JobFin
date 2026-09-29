@@ -15,107 +15,8 @@ import CareerTips from './components/CareerTips';
 import CompanyDirectory from './components/CompanyDirectory';
 import UserProfile from './components/UserProfile';
 import ProfileCompletionWizard from './components/ProfileCompletionWizard';
-import NotificationDrawer from './components/NotificationDrawer';
 import Footer from './components/Footer';
 import { authService, jobService, applicationService, labService } from './services/api';
-
-const getInitialNotifications = (role) => {
-  if (role === 'ROLE_RECRUITER') {
-    return [
-      {
-        id: 1,
-        title: 'New Candidate Applied',
-        message: 'Ayush Sharma (Java 17, Spring Boot, MySQL) submitted an application for "Java Backend Developer".',
-        time: '5 mins ago',
-        type: 'application',
-        category: 'Inbound Applicant',
-        icon: 'bi-person-plus-fill',
-        read: false,
-        actionView: 'recruiter-dashboard',
-      },
-      {
-        id: 2,
-        title: 'Talent Sourcing Match (98%)',
-        message: 'Ayzen Vance (Ex-QuantFunds, 7.5 Yrs Exp) matches your requisition for Distributed Systems Lead.',
-        time: '35 mins ago',
-        type: 'sourcing',
-        category: 'Talent Match',
-        icon: 'bi-stars',
-        read: false,
-        actionView: 'talent-sourcing',
-      },
-      {
-        id: 3,
-        title: 'Interview Loop Pending',
-        message: '2 shortlisted candidates are waiting for interview calendar slot confirmation.',
-        time: '2 hours ago',
-        type: 'interview',
-        category: 'Hiring Pipeline',
-        icon: 'bi-calendar-check',
-        read: false,
-        actionView: 'recruiter-dashboard',
-      },
-      {
-        id: 4,
-        title: 'Listing Impressions Spike',
-        message: 'Your job posting "Cloud DevOps Engineer" received 124 new impressions and 8 saves today.',
-        time: '4 hours ago',
-        type: 'info',
-        category: 'Analytics',
-        icon: 'bi-graph-up-arrow',
-        read: true,
-        actionView: 'recruiter-dashboard',
-      },
-    ];
-  } else {
-    return [
-      {
-        id: 101,
-        title: 'Application Shortlisted! 🎉',
-        message: 'TechCorp Innovations reviewed your profile for "Java Backend Developer" and moved you to Shortlisted.',
-        time: '12 mins ago',
-        type: 'status',
-        category: 'Status Update',
-        icon: 'bi-patch-check-fill',
-        read: false,
-        actionView: 'seeker-dashboard',
-      },
-      {
-        id: 102,
-        title: 'Technical Interview Scheduled',
-        message: 'TechCorp scheduled your Spring Boot & MySQL System Design round for Friday at 11:00 AM IST.',
-        time: '1 hour ago',
-        type: 'interview',
-        category: 'Interview Invite',
-        icon: 'bi-camera-video-fill',
-        read: false,
-        actionView: 'seeker-dashboard',
-      },
-      {
-        id: 103,
-        title: 'New High-Match Vacancy',
-        message: 'CloudScale Technologies posted "Cloud DevOps Engineer (₹10-18 LPA)" matching your Docker & AWS skills.',
-        time: '3 hours ago',
-        type: 'application',
-        category: 'Job Recommendation',
-        icon: 'bi-briefcase-fill',
-        read: false,
-        actionView: 'home',
-      },
-      {
-        id: 104,
-        title: 'Profile Viewed by Recruiter',
-        message: 'Lead Technical Recruiter from FinPay Solutions viewed your verified skills and resume.',
-        time: '5 hours ago',
-        type: 'info',
-        category: 'Profile Activity',
-        icon: 'bi-eye-fill',
-        read: true,
-        actionView: 'seeker-dashboard',
-      },
-    ];
-  }
-};
 
 export default function App() {
   // Theme state: 'light' or 'dark'
@@ -130,10 +31,6 @@ export default function App() {
 
   // Navigation view state: 'home', 'recruiter-dashboard', 'seeker-dashboard', 'salary-guide', 'companies', 'career-tips', 'profile'
   const [currentView, setCurrentView] = useState('home');
-
-  // Notifications state
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
 
   // Job portal states
   const [jobs, setJobs] = useState([]);
@@ -202,7 +99,6 @@ export default function App() {
       try {
         const parsed = JSON.parse(savedUser);
         setUser(parsed);
-        setNotifications(getInitialNotifications(parsed.role));
       } catch (e) {
         localStorage.removeItem('jobfins_token');
         localStorage.removeItem('jobfins_user');
@@ -239,7 +135,6 @@ export default function App() {
     localStorage.setItem('jobfins_token', token);
     localStorage.setItem('jobfins_user', JSON.stringify(userData));
     setUser(userData);
-    setNotifications(getInitialNotifications(role));
     if (role === 'ROLE_RECRUITER') {
       setCurrentView('recruiter-dashboard');
     } else {
@@ -260,62 +155,18 @@ export default function App() {
     localStorage.removeItem('jobfins_token');
     localStorage.removeItem('jobfins_user');
     setUser(null);
-    setNotifications([]);
     setCurrentView('home');
   };
 
   const handleApplySubmit = async (jobId, applicationData) => {
     await applicationService.applyForJob(jobId, applicationData);
     loadStats();
-    // Add applicant notification
-    const newNotif = {
-      id: Date.now(),
-      title: 'Application Submitted',
-      message: `Your application has been successfully transmitted to the hiring team.`,
-      time: 'Just now',
-      type: 'status',
-      icon: 'bi-check-circle-fill',
-      read: false,
-    };
-    setNotifications((prev) => [newNotif, ...prev]);
   };
 
   const handleJobCreated = async (jobData) => {
     await jobService.createJob(jobData);
     loadJobs();
     loadStats();
-    const newNotif = {
-      id: Date.now(),
-      title: 'Job Posting Published',
-      message: `Your listing "${jobData.title}" is now active and receiving applicant impressions.`,
-      time: 'Just now',
-      type: 'info',
-      icon: 'bi-megaphone-fill',
-      read: false,
-    };
-    setNotifications((prev) => [newNotif, ...prev]);
-  };
-
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  const handleClearAll = () => {
-    setNotifications([]);
-  };
-
-  const handleNotificationClick = (notif) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
-    );
-    setNotificationsOpen(false);
-    if (notif.actionView) {
-      setCurrentView(notif.actionView);
-    } else if (user?.role === 'ROLE_RECRUITER') {
-      setCurrentView('recruiter-dashboard');
-    } else {
-      setCurrentView('seeker-dashboard');
-    }
   };
 
   // If user is not authenticated, enforce the required Auth Gate
@@ -330,7 +181,6 @@ export default function App() {
     );
   }
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
   const isProfileIncomplete = !(
     user?.completedProfile ||
     localStorage.getItem('jobfins_profile_completed_' + user?.email) === 'true' ||
@@ -355,9 +205,7 @@ export default function App() {
           setAuthModalOpen(true);
         }}
         onOpenPostJob={() => setPostJobModalOpen(true)}
-        onOpenNotifications={() => setNotificationsOpen(true)}
         onOpenProfileWizard={() => setProfileWizardOpen(true)}
-        unreadCount={unreadCount}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
@@ -550,16 +398,6 @@ export default function App() {
         onClose={() => setProfileWizardOpen(false)}
         user={user}
         onProfileUpdated={(updatedUser) => setUser(updatedUser)}
-      />
-
-      <NotificationDrawer
-        isOpen={notificationsOpen}
-        onClose={() => setNotificationsOpen(false)}
-        user={user}
-        notifications={notifications}
-        onMarkAllRead={handleMarkAllRead}
-        onNotificationClick={handleNotificationClick}
-        onClearAll={handleClearAll}
       />
 
       {/* Footer */}

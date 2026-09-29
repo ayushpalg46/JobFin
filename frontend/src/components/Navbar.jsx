@@ -8,9 +8,7 @@ export default function Navbar({
   onOpenLogin,
   onOpenRegister,
   onOpenPostJob,
-  onOpenNotifications,
   onOpenProfileWizard,
-  unreadCount = 0,
   theme = 'light',
   onToggleTheme,
 }) {
@@ -158,21 +156,6 @@ export default function Navbar({
               </>
             ) : (
               <div className="d-flex align-items-center gap-2">
-                {/* Notification Bell Button */}
-                <button
-                  className="btn btn-light position-relative border rounded-circle d-flex align-items-center justify-content-center p-2"
-                  style={{ width: '38px', height: '38px' }}
-                  onClick={onOpenNotifications}
-                  title="View Notifications"
-                >
-                  <i className="bi bi-bell-fill text-primary"></i>
-                  {unreadCount > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.65rem' }}>
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-
                 {/* Dynamic Profile Completion Status Indicator */}
                 {!user?.completedProfile &&
                 localStorage.getItem('jobfins_profile_completed_' + user?.email) !== 'true' &&

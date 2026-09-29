@@ -204,14 +204,6 @@
             <i class="bi bi-moon-stars-fill text-primary" id="staticNavbarThemeIcon"></i>
           </button>
 
-          <!-- Notification Bell -->
-          <button class="btn btn-light position-relative border rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 38px; height: 38px;" data-bs-toggle="modal" data-bs-target="#notificationModal" title="View Notifications">
-            <i class="bi bi-bell-fill text-primary"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="staticNotifBadge" style="font-size: 0.65rem;">
-              3
-            </span>
-          </button>
-
           <!-- Profile Button -->
           <button class="btn btn-outline-custom btn-sm d-flex align-items-center gap-2 px-3" data-bs-toggle="modal" data-bs-target="#profileModal" title="Manage Profile">
             <i class="bi bi-person-circle"></i>
@@ -751,43 +743,6 @@
     </div>
   </div>
 
-  <!-- Modal: Notification Drawer (Role-Based) -->
-  <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-end" style="max-width: 420px; margin-right: 1.5rem; margin-top: 1.5rem;">
-      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-        <div class="modal-header bg-white border-bottom p-3">
-          <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-bell-fill text-primary fs-5"></i>
-            <h6 class="modal-title fw-bold text-dark mb-0" id="notificationModalLabel">Notifications</h6>
-          </div>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="bg-light px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
-          <small class="text-muted fw-semibold">
-            Mode: <span class="badge bg-primary-subtle text-primary" id="staticNotifRoleBadge">Candidate Alerts</span>
-          </small>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-primary fw-semibold" style="font-size: 0.75rem;" onclick="markStaticAllRead()">
-              Mark all read
-            </button>
-            <span class="text-muted small">&bull;</span>
-            <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-danger fw-semibold" style="font-size: 0.75rem;" onclick="clearStaticNotifications()">
-              Clear
-            </button>
-          </div>
-        </div>
-        <div class="modal-body p-0" id="staticNotifContainer">
-          <!-- Populated by JS -->
-        </div>
-        <div class="modal-footer bg-light p-2 border-top text-center justify-content-center">
-          <small class="text-muted" style="font-size: 0.72rem;">
-            <i class="bi bi-shield-check text-success me-1"></i> Real-time notification stream active
-          </small>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal: Role-Based User Profile -->
   <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -957,85 +912,6 @@
       }
     }
 
-    let staticNotifications = [];
-
-    function getStaticInitialNotifications(role) {
-      if (role === 'ROLE_RECRUITER') {
-        return [
-          { id: 1, title: 'New Application Received', message: 'Sarah Jenkins applied for Senior Full Stack Java Developer.', time: '10 mins ago', type: 'application', icon: 'bi-person-badge', read: false },
-          { id: 2, title: 'Candidate Shortlisted', message: 'Rahul Sharma was moved to Technical Screening Round.', time: '2 hours ago', type: 'status', icon: 'bi-check2-circle', read: false },
-          { id: 3, title: 'Job Posting Performance', message: 'Your job post for Cloud Architect received 42 new views today.', time: '5 hours ago', type: 'info', icon: 'bi-graph-up-arrow', read: true },
-        ];
-      } else {
-        return [
-          { id: 101, title: 'Interview Invitation Scheduled', message: 'Google Cloud invited you for a Technical Round on Thursday at 3:00 PM.', time: '15 mins ago', type: 'interview', icon: 'bi-calendar-check', read: false },
-          { id: 102, title: 'Application Shortlisted', message: 'TechCorp reviewed your profile for Senior Java Engineer and moved you forward.', time: '1 hour ago', type: 'status', icon: 'bi-patch-check-fill', read: false },
-          { id: 103, title: 'Matching Job Opportunity', message: 'Amazon posted "Backend Engineer (Spring Boot & AWS)" matching your skill profile.', time: '4 hours ago', type: 'application', icon: 'bi-briefcase-fill', read: true },
-        ];
-      }
-    }
-
-    function renderStaticNotifications() {
-      const container = document.getElementById('staticNotifContainer');
-      const badge = document.getElementById('staticNotifBadge');
-      const unread = staticNotifications.filter(n => !n.read).length;
-      
-      if (badge) {
-        badge.textContent = unread;
-        badge.style.display = unread > 0 ? 'inline-block' : 'none';
-      }
-
-      if (!container) return;
-
-      if (staticNotifications.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-5 px-3">
-            <i class="bi bi-bell-slash text-muted display-5 mb-2 d-block"></i>
-            <h6 class="fw-bold text-dark">No Notifications</h6>
-            <p class="text-muted small mb-0">You're caught up with all recruitment updates!</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = `
-        <div class="list-group list-group-flush">
-          ${staticNotifications.map(n => `
-            <div class="list-group-item list-group-item-action p-3 border-bottom cursor-pointer ${!n.read ? 'bg-primary-subtle bg-opacity-25' : ''}" onclick="markStaticNotifRead(${n.id})">
-              <div class="d-flex align-items-start gap-3">
-                <div class="rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0 ${n.type === 'status' ? 'bg-success text-white' : n.type === 'application' ? 'bg-primary text-white' : n.type === 'interview' ? 'bg-info text-white' : 'bg-warning text-dark'}" style="width: 36px; height: 36px;">
-                  <i class="bi ${n.icon}"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <div class="d-flex justify-content-between align-items-center mb-1">
-                    <strong class="text-dark small">${n.title}</strong>
-                    <small class="text-muted" style="font-size: 0.68rem;">${n.time}</small>
-                  </div>
-                  <p class="text-muted small mb-1" style="font-size: 0.78rem;">${n.message}</p>
-                  ${!n.read ? '<span class="badge bg-primary" style="font-size: 0.62rem;">New</span>' : ''}
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }
-
-    function markStaticNotifRead(id) {
-      staticNotifications = staticNotifications.map(n => n.id === id ? { ...n, read: true } : n);
-      renderStaticNotifications();
-    }
-
-    function markStaticAllRead() {
-      staticNotifications = staticNotifications.map(n => ({ ...n, read: true }));
-      renderStaticNotifications();
-    }
-
-    function clearStaticNotifications() {
-      staticNotifications = [];
-      renderStaticNotifications();
-    }
-
     function checkStaticAuth() {
       const savedUser = sessionStorage.getItem('jobfins_static_user');
       if (savedUser) {
@@ -1051,7 +927,6 @@
         document.getElementById('staticProfileEmailHeader').textContent = u.email;
         document.getElementById('staticProfName').value = u.name;
         document.getElementById('staticProfileTypeBadge').textContent = u.role === 'ROLE_RECRUITER' ? 'Enterprise Recruiter' : 'Verified Candidate';
-        document.getElementById('staticNotifRoleBadge').textContent = u.role === 'ROLE_RECRUITER' ? 'Recruiter Alerts' : 'Candidate Alerts';
         
         if (u.role === 'ROLE_RECRUITER') {
           document.getElementById('staticRecruiterFields').style.display = 'flex';
@@ -1060,12 +935,6 @@
           document.getElementById('staticRecruiterFields').style.display = 'none';
           document.getElementById('staticSeekerFields').style.display = 'flex';
         }
-
-        // Setup notifications
-        if (staticNotifications.length === 0) {
-          staticNotifications = getStaticInitialNotifications(u.role);
-        }
-        renderStaticNotifications();
       } else {
         document.getElementById('staticAuthGateway').style.display = 'flex';
         document.getElementById('staticPortalContent').style.display = 'none';
