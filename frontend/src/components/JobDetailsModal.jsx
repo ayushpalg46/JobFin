@@ -3,10 +3,30 @@ import React, { useState } from 'react';
 export default function JobDetailsModal({ job, isOpen, onClose, onApplySubmit, user }) {
   const [coverLetter, setCoverLetter] = useState('');
   const [resumeLink, setResumeLink] = useState('');
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [attachedFileBase64, setAttachedFileBase64] = useState('');
+  const [useProfileResume, setUseProfileResume] = useState(Boolean(user?.resumeFileName || user?.resumeBase64 || user?.resumeUrl));
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   if (!isOpen || !job) return null;
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setFeedback({ type: 'danger', message: 'File size exceeds 5MB limit. Please upload a smaller document.' });
+      return;
+    }
+    setAttachedFile(file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAttachedFileBase64(reader.result);
+      setUseProfileResume(false);
+      setFeedback(null);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,13 +39,29 @@ export default function JobDetailsModal({ job, isOpen, onClose, onApplySubmit, u
       return;
     }
 
+    let finalResume = '';
+    if (attachedFileBase64) {
+      finalResume = attachedFileBase64;
+    } else if (resumeLink.trim()) {
+      finalResume = resumeLink.trim();
+    } else if (useProfileResume && (user?.resumeBase64 || user?.resumeUrl || user?.resumeFileName)) {
+      finalResume = user.resumeBase64 || user.resumeUrl || user.resumeFileName;
+    }
+
+    if (!finalResume) {
+      setFeedback({ type: 'danger', message: 'Please upload a real resume file (PDF/DOCX) or provide a resume link.' });
+      return;
+    }
+
     setSubmitting(true);
     setFeedback(null);
     try {
-      await onApplySubmit(job.id, { coverLetter, resumeLink });
-      setFeedback({ type: 'success', message: 'Application submitted successfully to MySQL database!' });
+      await onApplySubmit(job.id, { coverLetter, resumeLink: finalResume });
+      setFeedback({ type: 'success', message: 'Application submitted successfully to employer!' });
       setCoverLetter('');
       setResumeLink('');
+      setAttachedFile(null);
+      setAttachedFileBase64('');
       setTimeout(() => {
         onClose();
         setFeedback(null);
@@ -36,6 +72,8 @@ export default function JobDetailsModal({ job, isOpen, onClose, onApplySubmit, u
       setSubmitting(false);
     }
   };
+
+  const hasProfileResume = Boolean(user?.resumeFileName || user?.resumeBase64 || user?.resumeUrl);
 
   return (
     <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(10,25,47,0.6)' }}>
@@ -91,24 +129,52 @@ export default function JobDetailsModal({ job, isOpen, onClose, onApplySubmit, u
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label small fw-bold">Resume Attachment / Link *</label>
-                    {user?.resumeFileName ? (
+                    <label className="form-label small fw-bold">Resume Attachment *</label>
+                    
+                    {hasProfileResume && (
                       <div className="p-2 mb-2 bg-light border rounded d-flex align-items-center justify-content-between">
                         <div className="d-flex align-items-center gap-2">
                           <i className="bi bi-file-earmark-pdf text-danger fs-5"></i>
-                          <small className="fw-semibold text-dark">{user.resumeFileName}</small>
+                          <small className="fw-semibold text-dark text-truncate" style={{ maxWidth: '170px' }}>
+                            {user.resumeFileName || user.resumeUrl || 'Profile Resume'}
+                          </small>
                         </div>
-                        <span className="badge bg-success">Profile Resume</span>
+                        <span className="badge bg-success-subtle text-success border border-success-subtle">
+                          Saved in Profile
+                        </span>
                       </div>
-                    ) : null}
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      value={resumeLink}
-                      onChange={(e) => setResumeLink(e.target.value)}
-                      placeholder={user?.resumeFileName ? "Or provide alternative URL / portfolio..." : "Paste resume URL / portfolio..."}
-                      required={!user?.resumeFileName}
-                    />
+                    )}
+
+                    <div className="mb-2">
+                      <label className="form-label text-muted" style={{ fontSize: '0.75rem' }}>
+                        {hasProfileResume ? 'Or attach an updated file for this application:' : 'Upload real resume file (PDF / DOCX):'}
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control form-control-sm"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                      />
+                      {attachedFile && (
+                        <small className="text-primary d-block mt-1">
+                          <i className="bi bi-file-earmark-check me-1"></i> Attached: {attachedFile.name} ({(attachedFile.size / 1024).toFixed(1)} KB)
+                        </small>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="form-label text-muted" style={{ fontSize: '0.75rem' }}>Or paste resume URL / portfolio link:</label>
+                      <input
+                        type="url"
+                        className="form-control form-control-sm"
+                        value={resumeLink}
+                        onChange={(e) => {
+                          setResumeLink(e.target.value);
+                          if (e.target.value) setUseProfileResume(false);
+                        }}
+                        placeholder="https://drive.google.com/your-resume.pdf"
+                      />
+                    </div>
                   </div>
 
                   <button type="submit" className="btn btn-cobalt w-100 btn-sm py-2 fw-bold" disabled={submitting}>

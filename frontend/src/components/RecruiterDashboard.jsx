@@ -176,9 +176,26 @@ export default function RecruiterDashboard({ user, onOpenPostJob, onExtendOffer 
                         {app.coverLetter || 'No cover letter provided.'}
                       </p>
                       {app.resumeLink && (
-                        <a href={app.resumeLink} target="_blank" rel="noreferrer" className="btn btn-outline-primary btn-sm py-0 px-2" style={{ fontSize: '0.75rem' }}>
-                          <i className="bi bi-file-earmark-pdf me-1"></i> View Resume
-                        </a>
+                        app.resumeLink.startsWith('data:') ? (
+                          <a
+                            href={app.resumeLink}
+                            download={`${(app.seeker?.name || 'Candidate').replace(/\s+/g, '_')}_Resume.pdf`}
+                            className="btn btn-outline-primary btn-sm py-0 px-2"
+                            style={{ fontSize: '0.75rem' }}
+                          >
+                            <i className="bi bi-download me-1"></i> Download Resume
+                          </a>
+                        ) : (
+                          <a
+                            href={app.resumeLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn btn-outline-primary btn-sm py-0 px-2"
+                            style={{ fontSize: '0.75rem' }}
+                          >
+                            <i className="bi bi-file-earmark-pdf me-1"></i> View Resume
+                          </a>
+                        )
                       )}
                     </td>
                     <td className="small text-muted">{app.appliedDate?.substring(0, 10)}</td>

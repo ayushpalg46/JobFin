@@ -31,6 +31,52 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
     }
   }, [user, isRecruiter]);
 
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFeedback({ type: 'danger', message: 'File size exceeds 5MB limit. Please upload a smaller PDF or Word document.' });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Data = reader.result;
+      const updatedUser = {
+        ...user,
+        resumeFileName: file.name,
+        resumeFileSize: file.size,
+        resumeBase64: base64Data,
+        resumeUploadDate: new Date().toISOString(),
+      };
+      localStorage.setItem('jobfins_user', JSON.stringify(updatedUser));
+      onProfileUpdated(updatedUser);
+      setFeedback({ type: 'success', message: `Resume "${file.name}" uploaded and saved to your profile!` });
+      setTimeout(() => setFeedback(null), 3000);
+    };
+    reader.onerror = () => {
+      setFeedback({ type: 'danger', message: 'Failed to read file. Please try another document.' });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveResume = () => {
+    const updatedUser = {
+      ...user,
+      resumeFileName: null,
+      resumeFileSize: null,
+      resumeBase64: null,
+      resumeUploadDate: null,
+      resumeUrl: '',
+    };
+    setResumeUrl('');
+    localStorage.setItem('jobfins_user', JSON.stringify(updatedUser));
+    onProfileUpdated(updatedUser);
+    setFeedback({ type: 'info', message: 'Resume removed from your profile.' });
+    setTimeout(() => setFeedback(null), 3000);
+  };
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -49,9 +95,9 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
         ...user,
         ...res.data,
         location: location.trim(),
-        resumeUrl: resumeUrl.trim(),
-        companyWebsite: companyWebsite.trim(),
-        experienceLevel,
+        resumeUrl: isRecruiter ? '' : resumeUrl.trim(),
+        companyWebsite: isRecruiter ? companyWebsite.trim() : '',
+        experienceLevel: isRecruiter ? null : experienceLevel,
       };
 
       // Save locally
@@ -71,9 +117,9 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
         companyName: isRecruiter ? companyName : null,
         bioOrSkills: !isRecruiter ? bioOrSkills : null,
         location,
-        resumeUrl,
-        companyWebsite,
-        experienceLevel,
+        resumeUrl: isRecruiter ? '' : resumeUrl,
+        companyWebsite: isRecruiter ? companyWebsite : '',
+        experienceLevel: isRecruiter ? null : experienceLevel,
       };
       localStorage.setItem('jobfins_user', JSON.stringify(updatedUser));
       onProfileUpdated(updatedUser);
@@ -204,7 +250,22 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>Resume / Portfolio Link</label>
+                      <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>Upload Real Resume (PDF / DOCX)</label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileUpload}
+                      />
+                      {user?.resumeFileName && (
+                        <small className="text-success d-block mt-1">
+                          <i className="bi bi-check-circle-fill me-1"></i> Current file: {user.resumeFileName}
+                        </small>
+                      )}
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label small fw-bold text-muted text-uppercase" style={{ fontSize: '0.72rem' }}>Or Paste Resume / Portfolio Link</label>
                       <input
                         type="url"
                         className="form-control"
@@ -301,7 +362,7 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                     </div>
 
                     <h5 className="fw-bold text-dark mb-3"><i className="bi bi-briefcase me-2 text-primary"></i> Experience & Background</h5>
-                    <div className="p-3 bg-light rounded-3 border mb-3">
+                    <div className="p-3 bg-light rounded-3 border mb-4">
                       <div className="d-flex justify-content-between align-items-center mb-1">
                         <strong className="text-dark">{experienceLevel}</strong>
                         <span className="badge bg-success-subtle text-success border border-success-subtle">Ready to Interview</span>
@@ -311,42 +372,76 @@ export default function UserProfile({ user, onProfileUpdated, onFindJobs, onOpen
                       </p>
                     </div>
 
-                    <h5 className="fw-bold text-dark mb-3"><i className="bi bi-file-earmark-pdf me-2 text-primary"></i> Verified Resume</h5>
-                    <div className="p-3 bg-white border rounded-3 d-flex justify-content-between align-items-center">
-                      <div className="d-flex align-items-center gap-2">
-                        <i className="bi bi-file-pdf text-danger fs-4"></i>
-                        <div>
-                          <strong className="text-dark small d-block">
-                            {user?.resumeFileName || `${name.replace(/\s+/g, '_')}_Resume_2026.pdf`}
-                          </strong>
-                          <small className="text-muted">
-                            {user?.resumeFileSize ? `${(user.resumeFileSize / (1024 * 1024)).toFixed(2)} MB &bull; ` : ''}
-                            Updated on JobFins candidate registry
-                          </small>
+                    <h5 className="fw-bold text-dark mb-3"><i className="bi bi-file-earmark-pdf me-2 text-primary"></i> Candidate Resume</h5>
+                    {(user?.resumeBase64 || user?.resumeFileName || user?.resumeUrl || resumeUrl) ? (
+                      <div className="p-3 bg-white border rounded-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="rounded-3 bg-primary-subtle text-primary p-2 d-flex align-items-center justify-content-center" style={{ width: '44px', height: '44px' }}>
+                            <i className="bi bi-file-earmark-pdf-fill fs-4 text-primary"></i>
+                          </div>
+                          <div>
+                            <strong className="text-dark small d-block">
+                              {user?.resumeFileName || 'Verified Resume Link'}
+                            </strong>
+                            <small className="text-muted">
+                              {user?.resumeFileSize ? `${(user.resumeFileSize / (1024 * 1024)).toFixed(2)} MB • ` : ''}
+                              {user?.resumeUploadDate ? `Uploaded on ${new Date(user.resumeUploadDate).toLocaleDateString()}` : 'Attached to profile'}
+                            </small>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-2 flex-wrap">
+                          {user?.resumeBase64 ? (
+                            <a
+                              href={user.resumeBase64}
+                              download={user.resumeFileName || 'Resume.pdf'}
+                              className="btn btn-primary btn-sm px-3 fw-semibold shadow-sm"
+                            >
+                              <i className="bi bi-download me-1"></i> Download
+                            </a>
+                          ) : (user?.resumeUrl || resumeUrl) ? (
+                            <a
+                              href={user?.resumeUrl || resumeUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn btn-outline-primary btn-sm px-3 fw-semibold"
+                            >
+                              <i className="bi bi-box-arrow-up-right me-1"></i> View Link
+                            </a>
+                          ) : null}
+                          <label className="btn btn-outline-secondary btn-sm px-3 mb-0 cursor-pointer">
+                            <i className="bi bi-arrow-repeat me-1"></i> Replace
+                            <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileUpload} style={{ display: 'none' }} />
+                          </label>
+                          <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm px-2"
+                            onClick={handleRemoveResume}
+                            title="Remove Resume"
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
                         </div>
                       </div>
-                      {user?.resumeBase64 ? (
-                        <a
-                          href={user.resumeBase64}
-                          download={user.resumeFileName || 'Resume.pdf'}
-                          className="btn btn-outline-primary btn-sm px-3 fw-semibold"
-                        >
-                          <i className="bi bi-download me-1"></i> Download Resume
-                        </a>
-                      ) : resumeUrl ? (
-                        <a href={resumeUrl} target="_blank" rel="noreferrer" className="btn btn-outline-primary btn-sm px-3">
-                          <i className="bi bi-box-arrow-up-right me-1"></i> View Resume
-                        </a>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary btn-sm px-3"
-                          onClick={() => setEditing(true)}
-                        >
-                          <i className="bi bi-pencil me-1"></i> Add Link
-                        </button>
-                      )}
-                    </div>
+                    ) : (
+                      <div className="p-4 bg-light border border-dashed rounded-3 text-center">
+                        <div className="mb-2 text-primary">
+                          <i className="bi bi-file-earmark-arrow-up fs-2"></i>
+                        </div>
+                        <h6 className="fw-bold text-dark mb-1">No Resume Uploaded Yet</h6>
+                        <p className="text-muted small mb-3" style={{ maxWidth: '440px', margin: '0 auto' }}>
+                          Upload your actual resume file (PDF, DOCX up to 5MB) or enter a portfolio link so employers can evaluate you for open positions.
+                        </p>
+                        <div className="d-flex justify-content-center gap-2 flex-wrap">
+                          <label className="btn btn-cobalt btn-sm px-4 fw-semibold mb-0 cursor-pointer shadow-sm">
+                            <i className="bi bi-upload me-1"></i> Upload Resume File (PDF)
+                            <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileUpload} style={{ display: 'none' }} />
+                          </label>
+                          <button type="button" className="btn btn-outline-custom btn-sm px-3" onClick={() => setEditing(true)}>
+                            <i className="bi bi-link-45deg me-1"></i> Add Link
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
