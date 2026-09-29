@@ -202,7 +202,6 @@
           <button class="btn btn-outline-custom btn-sm d-flex align-items-center gap-2 px-3" data-bs-toggle="modal" data-bs-target="#profileModal" title="Manage Profile">
             <i class="bi bi-person-circle"></i>
             <span class="fw-bold d-none d-sm-inline" id="staticUserName">Profile</span>
-            <span class="badge bg-light text-primary border d-none d-md-inline" id="staticUserRole" style="font-size: 0.68rem;">Seeker</span>
           </button>
 
           <button class="btn btn-cobalt btn-sm px-3 d-none d-lg-inline-block" data-bs-toggle="modal" data-bs-target="#postJobModal">
@@ -873,7 +872,6 @@
         document.getElementById('staticAuthGateway').style.display = 'none';
         document.getElementById('staticPortalContent').style.display = 'block';
         document.getElementById('staticUserName').textContent = u.name.split(' ')[0] || 'User';
-        document.getElementById('staticUserRole').textContent = u.role === 'ROLE_RECRUITER' ? 'Recruiter' : 'Seeker';
         
         // Setup profile modal
         document.getElementById('staticProfileAvatar').textContent = u.name.charAt(0) || 'U';

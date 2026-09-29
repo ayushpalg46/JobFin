@@ -154,9 +154,6 @@ export default function Navbar({
                 >
                   <i className="bi bi-person-circle"></i>
                   <span className="fw-bold d-none d-sm-inline">{user.name?.split(' ')[0] || 'Profile'}</span>
-                  <span className="badge bg-light text-primary border d-none d-md-inline" style={{ fontSize: '0.68rem' }}>
-                    {user.role === 'ROLE_RECRUITER' ? 'Recruiter' : 'Seeker'}
-                  </span>
                 </button>
 
                 {user.role === 'ROLE_RECRUITER' && (
