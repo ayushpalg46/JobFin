@@ -8,11 +8,11 @@ FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 # Copy pom.xml and dependencies
-COPY pom.xml ./pom.xml
+COPY backend/pom.xml ./pom.xml
 RUN mvn dependency:go-offline -B
 
 # Copy source code and package executable fat JAR
-COPY src ./src
+COPY backend/src ./src
 RUN mvn clean package -DskipTests -B
 
 # Stage 2: Hardened Production Runtime
